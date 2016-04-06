@@ -1,0 +1,36 @@
+.columns {
+  display: flex;
+}
+.column {
+  overflow: hidden;
+  flex: 1;
+  & + .column {
+    &.is-double {
+      flex: 2;
+    }
+    &.is-triple {
+      flex: 3;
+    }
+    &.is-quadruple {
+      flex: 4;
+    }
+    &.is-half {
+      flex: none;
+      width: 50%;
+    }
+    &.is-third {
+      flex: none;
+      width: 33.3333%;
+    }
+    &.is-quarter {
+      flex: none;
+      width: 25%;
+    }
+    @for $i from 1 through 11 {
+      &.is-#{$i} {
+        flex: none;
+        width: ($i / 12) * 100%;
+      }
+    }
+  } // end .column + .column
+} // end .column

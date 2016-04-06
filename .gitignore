@@ -1,0 +1,23 @@
+# Extraneous files
+.DS_Store
+*.swp
+
+# Dependencies
+node_modules/
+
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+
+# node-waf configuration
+.lock-wscript
+
+# Output
+dist
+release
+build/Release
