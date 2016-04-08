@@ -1,0 +1,12 @@
+// TODO lots of vars
+.activity {
+  background-color: #333;
+  border-radius: 2px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  position: absolute;
+  z-index: 100;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  padding: 5px;
+  cursor: move;
+}
