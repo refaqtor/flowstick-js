@@ -116,20 +116,29 @@ export class Transition extends PureComponent {
     return { x, y };
   }
 
-  computePoints(transition, activityPositions) {
-    const { from, to } = transition;
-    const fromPoint = this.getPoint(from, activityPositions);
+  computePoints(from, to, activityPositions) {
+    let fromPoint = this.getPoint(from, activityPositions);
     let toPoint = this.getPoint(to, activityPositions);
     if (toPoint.activity) {
       toPoint = this.closestActivityPoint(toPoint, fromPoint);
+    }
+    if (fromPoint.activity) {
+      fromPoint = this.closestActivityPoint(fromPoint, toPoint);
     }
     return { from: fromPoint, to: toPoint };
   }
 
   render() {
     const { transition, activityPositions } = this.props;
-    const points = this.computePoints(transition, activityPositions);
-    return <Segment {...points} />;
+    const { segments } = transition;
+    return (
+      <div>
+        {segments.map((seg, index) =>
+          <Segment
+            key={index}
+            {...this.computePoints(seg.from, seg.to, activityPositions)} />)}
+      </div>
+    );
   }
 }
 

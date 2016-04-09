@@ -33,9 +33,23 @@ function parseXPDL(xml) {
   const transitions = process['xpdl:Transitions'][0].$$
     .map(trans => {
       const id = trans.$.Id;
-      const to = trans.$.To;
-      const from = trans.$.From;
-      return { id, to, from };
+      const toAct = trans.$.To;
+      const fromAct = trans.$.From;
+      const anchors = trans['xpdl:ConnectorGraphicsInfos'][0].$$
+        .filter(graphicsInfo =>
+          graphicsInfo.$.Style === 'NO_ROUTING_ORTHOGONAL' && graphicsInfo.$$)
+        .reduce((accum, graphicsInfo) => accum.concat(
+          graphicsInfo.$$.map(cord => {
+            const { XCoordinate, YCoordinate } = cord.$;
+            return { x: parseInt(XCoordinate), y: parseInt(YCoordinate) };
+          })
+        ), []);
+      const toPoints = anchors.concat([toAct]);
+      const fromPoints = [fromAct].concat(anchors);
+      const segments = toPoints.map((toPoint, index) => {
+        return { from: fromPoints[index], to: toPoint };
+      });
+      return { id, segments };
     });
   const name = process.$.Name;
   const id = process.$.Id;

@@ -17,10 +17,14 @@ const Lane = Record({
   y: 0,
 });
 
-const Transition = Record({
-  id: undefined,
+const Segment = Record({
   to: undefined,
   from: undefined,
+});
+
+const Transition = Record({
+  id: undefined,
+  segments: List(),
 });
 
 const Process = Record({
@@ -44,8 +48,14 @@ export default function process(state = initialState, action) {
   case ProcessActions.FINISH_PROCESS_LOAD_SUCCESS:
     activities = List(action.activities.map(Activity));
     const lanes = List(action.lanes.map(Lane));
-    const transitions = Map(
-      action.transitions.map(trans => [trans.id, Transition(trans)]));
+    const transistionsListing = action.transitions.map(trans => [
+      trans.id,
+      Transition({
+        id: trans.id,
+        segments: List(trans.segments.map(Segment)),
+      }),
+    ]);
+    const transitions = Map(transistionsListing);
     return Process({
       id: action.id,
       name: action.name,
