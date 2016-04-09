@@ -9,15 +9,6 @@ const parser = new Parser({
 });
 const parseXPDLString = promisify(parser.parseString);
 
-const laneOffset = {
-  /* eslint-disable camelcase */
-  employee_management_pool1_lan21: { top: 0, size: 330 }, // Executive
-  employee_management_pool1_lan11: { top: 330, size: 210 }, // system
-  employee_management_pool11_lan1: { top: 540, size: 150 }, // secretary
-  employee_management_pool11_lan2: { top: 690, size: 150 }, // President
-  /* eslint-enable camelcase */
-};
-
 function parseXPDL(xml) {
   const lanes = xml['xpdl:Package']['xpdl:Pools'][0].$$[0]['xpdl:Lanes'][0].$$
     .map(lane => {
@@ -25,9 +16,7 @@ function parseXPDL(xml) {
       const name = lane.$.Name;
       const performers = lane['xpdl:Performers'][0].$$
         .map(peformer => peformer._);
-      const y = laneOffset[id].top;
-      const height = laneOffset[id].size;
-      return { id, name, performers, y, height };
+      return { id, name, performers };
     });
   const process = xml['xpdl:Package']['xpdl:WorkflowProcesses'][0].$$[0];
   const transitions = process['xpdl:Transitions'][0].$$
@@ -62,8 +51,8 @@ function parseXPDL(xml) {
       const laneId = graphicsInfo.$.LaneId;
       const positionData = graphicsInfo['xpdl:Coordinates'][0].$;
       const x = parseInt(positionData.XCoordinate);
-      const y = parseInt(positionData.YCoordinate) + laneOffset[laneId].top;
-      return { id, name, x, y, laneId };
+      const relativeY = parseInt(positionData.YCoordinate);
+      return { id, name, x, relativeY, laneId };
     });
   return { id, name, activities, lanes, transitions };
 }

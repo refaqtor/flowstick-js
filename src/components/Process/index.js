@@ -5,6 +5,8 @@ import { connect } from 'react-redux';
 
 import * as ProcessActions from '../../actions/process';
 import PureComponent from '../PureComponent';
+import { getActivities, getLanes, getLanesWidth,
+         getTransitions } from './selectors/Process.js';
 import { Transitions } from './Transition';
 import { Lanes } from './Lane';
 import { Activities } from './Activity';
@@ -14,6 +16,7 @@ class Process extends PureComponent {
   static propTypes = {
     loadProcess: PropTypes.func.isRequired,
     dragActivity: PropTypes.func.isRequired,
+    stopDragActivity: PropTypes.func.isRequired,
     xpdlName: PropTypes.string.isRequired,
     loading: PropTypes.bool.isRequired,
     activities: ImmutablePropTypes.list.isRequired,
@@ -26,29 +29,31 @@ class Process extends PureComponent {
   }
 
   render() {
-    const { lanes, loading, activities,
-            transitions, dragActivity } = this.props;
+    const { lanes, lanesWidth, loading, activities, transitions,
+            dragActivity, stopDragActivity } = this.props;
     if ( loading ) {
       return <h1>Loading...</h1>;
     }
     return (
       <section className={styles.process}>
-        <Lanes lanes={lanes} />
+        <Lanes lanes={lanes} width={lanesWidth} />
         <Activities activities={activities}
-          dragActivity={dragActivity} />
-        <Transitions transitions={transitions} activities={activities} />
+          dragActivity={dragActivity}
+          stopDragActivity={stopDragActivity} />
+        <Transitions transitions={transitions} />
       </section>
     );
   }
 }
 
 function mapStateToProps(state) {
-  const { transitions, lanes, activities, loaded } = state.process;
+  const { loaded } = state.process;
   return {
-    lanes,
-    activities,
-    transitions,
     loading: !loaded,
+    lanes: getLanes(state),
+    lanesWidth: getLanesWidth(state),
+    transitions: getTransitions(state),
+    activities: getActivities(state),
   };
 }
 

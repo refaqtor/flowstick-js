@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
-import Draggable from 'react-draggable';
+import { DraggableCore } from 'react-draggable';
 
 import PureComponent from '../PureComponent';
 import styles from './styles/Activity';
@@ -12,6 +12,7 @@ export class Activities extends PureComponent {
   static propTypes = {
     activities: ImmutablePropTypes.list.isRequired,
     dragActivity: PropTypes.func.isRequired,
+    stopDragActivity: PropTypes.func.isRequired,
   };
 
   render() {
@@ -20,7 +21,8 @@ export class Activities extends PureComponent {
         {this.props.activities.map(act =>
           <Activity key={act.id} id={act.id}
             displayName={act.name} x={act.x} y={act.y}
-            onDrag={this.props.dragActivity} />)}
+            onDrag={this.props.dragActivity}
+            onDragStop={this.props.stopDragActivity} />)}
       </div>
     );
   }
@@ -33,12 +35,18 @@ export class Activity extends PureComponent {
     y: PropTypes.number.isRequired,
     displayName: PropTypes.string,
     onDrag: PropTypes.func.isRequired,
+    onDragStop: PropTypes.func.isRequired,
+  }
+
+  onDragStop() {
+    const { id, onDragStop } = this.props;
+    onDragStop(id);
   }
 
   onDrag(evt, ui) {
-    const newPos = ui.position;
     const { id, onDrag } = this.props;
-    onDrag(id, newPos.left, newPos.top);
+    const { deltaX, deltaY } = ui.position;
+    onDrag(id, deltaX, deltaY);
   }
 
   render() {
@@ -48,15 +56,17 @@ export class Activity extends PureComponent {
       displayName = <em>Missing name...</em>;
     }
     return (
-      <Draggable
-        start={{ x, y }}
-        onDrag={this.onDrag.bind(this)}>
+      <DraggableCore
+        onDrag={this.onDrag.bind(this)}
+        onStop={this.onDragStop.bind(this)}>
         <div
           className={styles.activity}
-          style={{ width: ACTIVITY_WIDTH, height: ACTIVITY_HEIGHT }}>
+          style={{
+            top: y, left: x,
+            width: ACTIVITY_WIDTH, height: ACTIVITY_HEIGHT }}>
           {displayName}
         </div>
-      </Draggable>
+      </DraggableCore>
     );
   }
 }

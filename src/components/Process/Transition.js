@@ -1,5 +1,4 @@
 import React, { PropTypes } from 'react';
-import { Map } from 'immutable';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 
 import PureComponent from '../PureComponent';
@@ -56,17 +55,6 @@ export class Segment extends PureComponent {
 export class Transition extends PureComponent {
   static propTypes = {
     transition: ImmutablePropTypes.record.isRequired,
-    activityPositions: ImmutablePropTypes.map.isRequired,
-  }
-
-  getPoint(desired, activityPositions) {
-    if (typeof desired === 'object') {
-      return desired;
-    }
-    const activityPoint = activityPositions.get(desired);
-    const x = activityPoint.x + HALF_ACTIVITY_WIDTH;
-    const y = activityPoint.y + HALF_ACTIVITY_HEIGHT;
-    return { x, y, activity: true };
   }
 
   closestActivityPoint(activityPoint, fromPoint) {
@@ -116,27 +104,26 @@ export class Transition extends PureComponent {
     return { x, y };
   }
 
-  computePoints(from, to, activityPositions) {
-    let fromPoint = this.getPoint(from, activityPositions);
-    let toPoint = this.getPoint(to, activityPositions);
-    if (toPoint.activity) {
-      toPoint = this.closestActivityPoint(toPoint, fromPoint);
+  computePoints(seg) {
+    let { from, to } = seg;
+    if (seg.toActivity) {
+      to = this.closestActivityPoint(to, from);
     }
-    if (fromPoint.activity) {
-      fromPoint = this.closestActivityPoint(fromPoint, toPoint);
+    if (to && seg.fromActivity) {
+      from = this.closestActivityPoint(from, to);
     }
-    return { from: fromPoint, to: toPoint };
+    return { from, to };
   }
 
   render() {
-    const { transition, activityPositions } = this.props;
+    const { transition } = this.props;
     const { segments } = transition;
     return (
       <div>
         {segments.map((seg, index) =>
           <Segment
             key={index}
-            {...this.computePoints(seg.from, seg.to, activityPositions)} />)}
+            {...this.computePoints(seg)} />)}
       </div>
     );
   }
@@ -145,19 +132,15 @@ export class Transition extends PureComponent {
 export class Transitions extends PureComponent {
   static propTypes = {
     transitions: ImmutablePropTypes.map.isRequired,
-    activities: ImmutablePropTypes.list.isRequired,
   }
 
   render() {
-    const { transitions, activities } = this.props;
-    const activityPositions = activities
-      .reduce((accum, act) => accum.set(act.id, { x: act.x, y: act.y }), Map());
+    const { transitions } = this.props;
     return (
       <div>
         {transitions.map(transition =>
           <Transition
             key={transition.id}
-            activityPositions={activityPositions}
             transition={transition} />).toList()}
       </div>
     );

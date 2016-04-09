@@ -5,16 +5,16 @@ import * as ProcessActions from '../actions/process';
 const Activity = Record({
   id: undefined,
   name: undefined,
-  x: 0,
-  y: 0,
   laneId: undefined,
+  x: 0,
+  relativeY: 0,
+  draggingDeltaY: 0,
+  draggingDeltaX: 0,
 });
 
 const Lane = Record({
   id: undefined,
   performers: List(),
-  height: 0,
-  y: 0,
 });
 
 const Segment = Record({
@@ -38,15 +38,19 @@ const Process = Record({
 
 const initialState = Process();
 
+function updateActivity(activities, activityId, updater) {
+  const foundIndex = activities.findIndex(act => act.id === activityId);
+  return activities.update(foundIndex, updater);
+}
+
 export default function process(state = initialState, action) {
-  let activities;
   switch (action.type) {
 
   case ProcessActions.START_PROCESS_LOAD:
     return initialState;
 
-  case ProcessActions.FINISH_PROCESS_LOAD_SUCCESS:
-    activities = List(action.activities.map(Activity));
+  case ProcessActions.FINISH_PROCESS_LOAD_SUCCESS: {
+    const activities = List(action.activities.map(Activity));
     const lanes = List(action.lanes.map(Lane));
     const transistionsListing = action.transitions.map(trans => [
       trans.id,
@@ -64,17 +68,31 @@ export default function process(state = initialState, action) {
       activities,
       transitions,
     });
+  }
 
-  case ProcessActions.MOVE_ACTIVITY:
-    const { activityId, newX, newY } = action;
-    // Can this be done better?
-    const foundIndex = state.activities.findIndex(act => act.id === activityId);
-    const newAct = state.activities.get(foundIndex).merge({
-      x: newX,
-      y: newY,
-    });
-    activities = state.activities.set(foundIndex, newAct);
-    return state.merge({ loaded: true, activities });
+  case ProcessActions.MOVE_ACTIVITY: {
+    const { activityId, deltaY, deltaX } = action;
+    const activities = updateActivity(state.activities, activityId, oldAct =>
+      oldAct.merge({
+        draggingDeltaX: oldAct.draggingDeltaX + deltaX,
+        draggingDeltaY: oldAct.draggingDeltaY + deltaY,
+      })
+    );
+    return state.merge({ activities });
+  }
+
+  case ProcessActions.STOP_MOVE_ACTIVITY: {
+    const { activityId } = action;
+    const activities = updateActivity(state.activities, activityId, oldAct =>
+      oldAct.merge({
+        draggingDeltaX: 0,
+        draggingDeltaY: 0,
+        x: oldAct.x + oldAct.draggingDeltaX,
+        relativeY: oldAct.relativeY + oldAct.draggingDeltaY,
+      })
+    );
+    return state.merge({ activities });
+  }
 
   default:
     return state;

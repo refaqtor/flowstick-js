@@ -3,6 +3,7 @@ import { loadProcessXPDL } from '../../xpdl';
 export const START_PROCESS_LOAD = 'START_PROCESS_LOAD';
 export const FINISH_PROCESS_LOAD_SUCCESS = 'FINISH_PROCESS_LOAD_SUCCESS';
 export const MOVE_ACTIVITY = 'MOVE_ACTIVITY';
+export const STOP_MOVE_ACTIVITY = 'STOP_MOVE_ACTIVITY';
 
 export function loadProcess(name) {
   return dispatch => {
@@ -17,11 +18,18 @@ export function loadProcess(name) {
   };
 }
 
-export function dragActivity(activityId, newX, newY) {
+export function dragActivity(activityId, deltaX, deltaY) {
   return {
     type: MOVE_ACTIVITY,
     activityId,
-    newX,
-    newY,
+    deltaY,
+    deltaX,
+  };
+}
+
+export function stopDragActivity(activityId) {
+  return {
+    type: STOP_MOVE_ACTIVITY,
+    activityId,
   };
 }
