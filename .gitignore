@@ -20,4 +20,6 @@ pids
 # Output
 dist
 release
+coverage
+.nyc_output
 build/Release

@@ -1,0 +1,13 @@
+[libs]
+node_modules/iflow-bluebird/index.js.flow
+interfaces/
+
+[ignore]
+.*/dist/.*
+.*/node_modules/.*
+
+[include]
+./node_modules/
+
+[options]
+module.name_mapper='^.*\.scss$' -> '<PROJECT_ROOT>/src/styles/CSSModule.js.flow'

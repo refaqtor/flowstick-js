@@ -1,0 +1,6 @@
+declare module 'xml2js' {
+  declare class Parser {
+    constructor(opts: Object): void;
+    parseString(s: string | Buffer, f: (e: any, r: Object) => void): void;
+  }
+}
