@@ -3,7 +3,7 @@ import expect from 'unexpected';
 import { spy } from 'sinon';
 import { Promise } from 'bluebird';
 
-import { loadProcessXPDL, __RewireAPI__ as rewire } from '../../xpdl';
+import { loadPackageXPDL, __RewireAPI__ as rewire } from '../../xpdl';
 
 describe('XPDL', () => {
 
@@ -41,7 +41,7 @@ describe('XPDL', () => {
   describe('Errors', () => {
 
     it('should handle errors thrown by fileread.', () => {
-      const prom = loadProcessXPDL('nofilename')
+      const prom = loadPackageXPDL('nofilename')
         .catch(failure)
         .finally(() => {
           expect(readFileSpy.calledOnce, 'to be truthy');
@@ -54,7 +54,7 @@ describe('XPDL', () => {
     });
 
     it('should handle errors thrown by the XML parsing.', () => {
-      const prom = loadProcessXPDL('filename')
+      const prom = loadPackageXPDL('filename')
         .catch(failure)
         .finally(() => {
           expect(readFileSpy.calledOnce, 'to be truthy');
@@ -88,7 +88,7 @@ describe('XPDL', () => {
 
     it('should parse xpdl packages.', () => {
       xmlObj = { 'xpdl:Package': 'test' };
-      const prom = loadProcessXPDL('filename')
+      const prom = loadPackageXPDL('filename')
         .catch(failure)
         .finally(() => {
           expect(readFileSpy.calledOnce, 'to be truthy');

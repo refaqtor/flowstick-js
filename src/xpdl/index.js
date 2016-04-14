@@ -27,7 +27,7 @@ export function safeChildGet(obj: Object, key: string): Object {
   return obj[key] ? obj[key][0] : {};
 }
 
-export function loadProcessXPDL(filename: string): Promise<XPDLPackage> {
+export function loadPackageXPDL(filename: string): Promise<XPDLPackage> {
   return readFileAsync(filename)
     .then(parseXMLString)
     .then(parseXMLToXPDL);

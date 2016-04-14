@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 
-import Process from '../components/Process';
+import Package from '../components/Package';
 
 export default class HomePage extends Component {
   render() {
     return (
-      <Process />
+      <Package />
     );
   }
 }

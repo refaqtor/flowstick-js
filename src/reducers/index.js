@@ -1,11 +1,11 @@
 import { combineReducers } from 'redux';
 import { routerReducer as routing } from 'react-router-redux';
 
-import process from './process';
+import PackageReducer from './package';
 
 const rootReducer = combineReducers({
   routing,
-  process,
+  package: PackageReducer,
 });
 
 export default rootReducer;
