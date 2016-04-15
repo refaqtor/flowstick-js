@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "lint": "eslint src *.js",
-    "test": "cross-env NODE_ENV=test nyc --reporter=lcov --require babel-core/register --require ./test/setup.js mocha --recursive src/**/*.spec.js",
+    "test": "cross-env NODE_ENV=test nyc --all --reporter=lcov --require babel-core/register --require ./test/setup.js mocha --recursive src/**/*.spec.js",
     "test-watch": "npm test -- --watch",
     "hot-server": "node server.js",
     "build": "cross-env NODE_ENV=production webpack --config webpack.config.production.js --progress --profile --colors",
@@ -17,8 +17,13 @@
     "dev": "concurrently --kill-others \"npm run hot-server\" \"npm run start-hot\""
   },
   "nyc": {
-    "include": ["**/src/**/*.js"],
-    "exclude": ["**/*.spec.js"]
+    "include": [
+      "**/src/**/*.js"
+    ],
+    "exclude": [
+      "**/*.spec.js",
+      "main.js"
+    ]
   },
   "bin": {
     "electron": "./node_modules/.bin/electron"

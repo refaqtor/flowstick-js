@@ -2,6 +2,9 @@
 const devConfigs = require('./webpack.config.development');
 
 module.exports = {
+  resolve: {
+    extensions: devConfigs.resolve.extensions,
+  },
   output: {
     libraryTarget: 'commonjs2',
   },
