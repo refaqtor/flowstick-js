@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { DraggableCore } from 'react-draggable';
+import classnames from 'classnames';
 
 import PureComponent from '../PureComponent';
 import styles from './styles/Activity';
@@ -14,17 +15,23 @@ export class Activities extends PureComponent {
   static propTypes = {
     activities: ImmutablePropTypes.list.isRequired,
     dragActivity: PropTypes.func.isRequired,
+    focusActivity: PropTypes.func.isRequired,
     stopDragActivity: PropTypes.func.isRequired,
+    focusedObject: ImmutablePropTypes.record,
   };
 
   render() {
+    const { activities, dragActivity, stopDragActivity,
+            focusedObject, focusActivity } = this.props;
     return (
       <div>
-        {this.props.activities.map(act =>
+        {activities.map(act =>
           <Activity key={act.id} id={act.id}
+            focused={focusedObject === act}
             displayName={act.name} x={act.x} y={act.y}
-            onDrag={this.props.dragActivity}
-            onDragStop={this.props.stopDragActivity} />)}
+            onDrag={dragActivity}
+            onDragStart={focusActivity.bind(undefined, act)}
+            onDragStop={stopDragActivity} />)}
       </div>
     );
   }
@@ -37,12 +44,18 @@ export class Activity extends PureComponent {
     y: PropTypes.number.isRequired,
     displayName: PropTypes.string,
     onDrag: PropTypes.func.isRequired,
+    onDragStart: PropTypes.func.isRequired,
     onDragStop: PropTypes.func.isRequired,
+    focused: PropTypes.bool.isRequired,
   }
 
   onDragStop() {
     const { id, onDragStop, y } = this.props;
     onDragStop(id, y);
+  }
+
+  onDragStart() {
+    this.props.onDragStart();
   }
 
   onDrag(evt, ui) {
@@ -52,17 +65,18 @@ export class Activity extends PureComponent {
   }
 
   render() {
-    const { x, y } = this.props;
+    const { x, y, focused } = this.props;
     let { displayName } = this.props;
     if ( !displayName ) {
       displayName = <em>Missing name...</em>;
     }
     return (
       <DraggableCore
+        onStart={this.onDragStart.bind(this)}
         onDrag={this.onDrag.bind(this)}
         onStop={this.onDragStop.bind(this)}>
         <div
-          className={styles.activity}
+          className={classnames(styles.activity, { [styles.focused]: focused })}
           style={{
             top: y, left: x,
             width: ACTIVITY_WIDTH, height: ACTIVITY_HEIGHT }}>

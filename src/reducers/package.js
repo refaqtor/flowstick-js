@@ -28,12 +28,18 @@ const Transition = Record({
   segments: List(),
 });
 
+export const FocusObject = Record({
+  object: undefined,
+  type: undefined,
+});
+
 export const Workflow = Record({
   id: undefined,
   name: undefined,
   activities: List(),
   lanes: List(),
   transitions: Map(),
+  focusedObject: undefined,
 });
 
 export const Package = Record({

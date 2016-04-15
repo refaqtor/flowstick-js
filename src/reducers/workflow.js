@@ -1,3 +1,4 @@
+import { FocusObject } from './package';
 import * as WorkflowActions from '../actions/workflow';
 
 function updateActivity(activities, activityId, updater) {
@@ -7,6 +8,16 @@ function updateActivity(activities, activityId, updater) {
 
 export default function workflow(state, action) {
   switch (action.type) {
+
+  case WorkflowActions.FOCUS_OBJECT: {
+    const { object, objectType } = action;
+    return state.merge({
+      focusedObject: FocusObject({
+        type: objectType,
+        object,
+      }),
+    });
+  }
 
   case WorkflowActions.MOVE_ACTIVITY: {
     const { activityId, deltaY, deltaX } = action;

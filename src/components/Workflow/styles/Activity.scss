@@ -1,12 +1,18 @@
-// TODO lots of vars
+@import '../../../styles/vars.global';
+
 .activity {
-  background-color: #333;
+  background-color: $fs-clr-bg-medium-dark;
   border-radius: 2px;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
   position: absolute;
-  z-index: 100;
+  box-shadow: $fs-sha-two;
+  z-index: $fs-zindex-2;
   text-overflow: ellipsis;
   overflow: hidden;
   padding: 5px;
   cursor: move;
+}
+.focused {
+  background-color: $fs-clr-bg-light-dark;
+  z-index: $fs-zindex-focused;
+  box-shadow: $fs-sha-four;
 }

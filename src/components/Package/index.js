@@ -5,7 +5,8 @@ import { connect } from 'react-redux';
 
 import PureComponent from '../PureComponent';
 import Workflow from '../Workflow';
-import { dragActivity, stopDragActivity } from '../../actions/workflow';
+import { dragActivity, stopDragActivity,
+         focusObject } from '../../actions/workflow';
 import { loadPackage } from '../../actions/package';
 import { getCurrentWorkflow, getWorkflows } from './selectors/Package';
 
@@ -30,11 +31,12 @@ class Package extends PureComponent {
   }
 
   render() {
-    const { loading, currentWorkflow, dragActivity } = this.props;
+    const { loading, currentWorkflow, dragActivity, focusObject } = this.props;
     if ( loading ) {
       return <h1>Loading...</h1>;
     }
-    const { lanes, lanesWidth, activities, transitions } = currentWorkflow;
+    const { focusedObject, lanes, lanesWidth, activities,
+            transitions } = currentWorkflow;
     return (
       <div>
         <Workflow
@@ -43,6 +45,8 @@ class Package extends PureComponent {
           activities={activities}
           transitions={transitions}
           dragActivity={dragActivity}
+          focusObject={focusObject}
+          focusedObject={focusedObject}
           stopDragActivity={this.stopDragActivity.bind(this)} />
       </div>
     );
@@ -63,6 +67,7 @@ function mapDispatchToProps(dispatch) {
     loadPackage,
     dragActivity,
     stopDragActivity,
+    focusObject,
   }, dispatch);
 }
 

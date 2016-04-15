@@ -15,17 +15,22 @@ export default class Workflow extends PureComponent {
     transitions: ImmutablePropTypes.map.isRequired,
     activities: ImmutablePropTypes.list.isRequired,
     lanes: ImmutablePropTypes.list.isRequired,
+    focusedObject: ImmutablePropTypes.record,
+    focusObject: PropTypes.func.isRequired,
   }
 
   render() {
     const { lanes, lanesWidth, activities, transitions,
-            dragActivity, stopDragActivity } = this.props;
+            dragActivity, stopDragActivity, focusedObject,
+            focusObject } = this.props;
     return (
       <section className={styles.process}>
         <Lanes lanes={lanes} width={lanesWidth} />
         <Activities activities={activities}
+          focusActivity={focusObject.bind(undefined, 'activity')}
           dragActivity={dragActivity}
-          stopDragActivity={stopDragActivity} />
+          stopDragActivity={stopDragActivity}
+          focusedObject={focusedObject} />
         <Transitions transitions={transitions} />
       </section>
     );

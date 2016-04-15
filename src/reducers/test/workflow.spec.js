@@ -89,4 +89,18 @@ describe('Workflow Reducer', () => {
     expect(secondChangedAct.x, 'to be', 90);
   });
 
+  it('should ammend the workflow with a focused object.', () => {
+    const original = Workflow();
+    const newFocusObj = {};
+    const action = {
+      type: WorkflowActions.FOCUS_OBJECT,
+      object: newFocusObj,
+      objectType: 'anytype',
+    };
+    const res = workflowReducer(original, action);
+    const stateFocused = res.focusedObject;
+    expect(stateFocused.type, 'to be', 'anytype');
+    expect(stateFocused.object, 'to be', newFocusObj);
+  });
+
 });
