@@ -20,15 +20,16 @@ export default function workflow(state, action) {
   }
 
   case WorkflowActions.STOP_MOVE_ACTIVITY: {
-    const { activityId } = action;
-    const activities = updateActivity(state.activities, activityId, oldAct =>
-      oldAct.merge({
+    const { activityId, laneId, relativeY } = action;
+    const activities = updateActivity(state.activities, activityId, oldAct => {
+      return oldAct.merge({
+        laneId,
+        relativeY,
         draggingDeltaX: 0,
         draggingDeltaY: 0,
         x: oldAct.x + oldAct.draggingDeltaX,
-        relativeY: oldAct.relativeY + oldAct.draggingDeltaY,
-      })
-    );
+      });
+    });
     return state.merge({ activities });
   }
 

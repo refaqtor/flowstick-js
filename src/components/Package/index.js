@@ -22,23 +22,27 @@ class Package extends PureComponent {
     loadPackage(fileName);
   }
 
+  stopDragActivity(activityId, activityY) {
+    const { stopDragActivity, currentWorkflow } = this.props;
+    const { lanes } = currentWorkflow;
+    stopDragActivity(activityId, activityY, lanes);
+  }
+
   render() {
-    const { loading, workflows, currentWorkflow,
-            dragActivity, stopDragActivity } = this.props;
+    const { loading, currentWorkflow, dragActivity } = this.props;
     if ( loading ) {
       return <h1>Loading...</h1>;
     }
     const { lanes, lanesWidth, activities, transitions } = currentWorkflow;
     return (
       <div>
-        {workflows.size}
         <Workflow
           lanes={lanes}
           lanesWidth={lanesWidth}
           activities={activities}
           transitions={transitions}
           dragActivity={dragActivity}
-          stopDragActivity={stopDragActivity} />
+          stopDragActivity={this.stopDragActivity.bind(this)} />
       </div>
     );
   }
