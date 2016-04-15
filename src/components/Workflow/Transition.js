@@ -3,7 +3,7 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 
 import PureComponent from '../PureComponent';
 import styles from './styles/Transition';
-import { ACTIVITY_HEIGHT, ACTIVITY_WIDTH } from './Activity';
+import { HALF_ACTIVITY_HEIGHT, HALF_ACTIVITY_WIDTH } from './Activity';
 
 const POINT = PropTypes.shape({
   x: PropTypes.number.isRequired,
@@ -11,8 +11,6 @@ const POINT = PropTypes.shape({
 });
 
 const SEGMENT_THICKNESS = 10;
-const HALF_ACTIVITY_HEIGHT = ACTIVITY_HEIGHT / 2;
-const HALF_ACTIVITY_WIDTH = ACTIVITY_WIDTH / 2;
 const ACTIVITY_DIAGONAL_SLOPE = HALF_ACTIVITY_HEIGHT / HALF_ACTIVITY_WIDTH;
 
 export class Segment extends PureComponent {

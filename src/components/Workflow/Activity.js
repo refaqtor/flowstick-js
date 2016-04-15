@@ -6,7 +6,9 @@ import PureComponent from '../PureComponent';
 import styles from './styles/Activity';
 
 export const ACTIVITY_HEIGHT = 60;
+export const HALF_ACTIVITY_HEIGHT = ACTIVITY_HEIGHT / 2;
 export const ACTIVITY_WIDTH = 90;
+export const HALF_ACTIVITY_WIDTH = ACTIVITY_WIDTH / 2;
 
 export class Activities extends PureComponent {
   static propTypes = {
@@ -39,8 +41,8 @@ export class Activity extends PureComponent {
   }
 
   onDragStop() {
-    const { id, onDragStop } = this.props;
-    onDragStop(id);
+    const { id, onDragStop, y } = this.props;
+    onDragStop(id, y);
   }
 
   onDrag(evt, ui) {
