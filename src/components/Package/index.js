@@ -14,6 +14,7 @@ class Package extends PureComponent {
     loading: PropTypes.bool.isRequired,
     loadPackage: PropTypes.func.isRequired,
     fileName: PropTypes.string.isRequired,
+    workflows: ImmutablePropTypes.list.isRequired,
     currentWorkflow: ImmutablePropTypes.record.isRequired,
   }
 
