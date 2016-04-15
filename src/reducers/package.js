@@ -3,7 +3,7 @@ import { Map, Record, List } from 'immutable';
 import WorkflowReducer from './workflow';
 import * as PackageActions from '../actions/package';
 
-const Activity = Record({
+export const Activity = Record({
   id: undefined,
   name: undefined,
   laneId: undefined,
@@ -28,16 +28,15 @@ const Transition = Record({
   segments: List(),
 });
 
-const Workflow = Record({
+export const Workflow = Record({
   id: undefined,
   name: undefined,
-  loaded: false,
   activities: List(),
   lanes: List(),
   transitions: Map(),
 });
 
-const Package = Record({
+export const Package = Record({
   filename: undefined,
   currentWorkflow: undefined,
   loaded: false,
@@ -71,7 +70,8 @@ export default function pack(state = initialState, action) {
   case PackageActions.FINISH_PACKAGE_LOAD_SUCCESS: {
     const workflows = action.workflows.map(workflow => {
       const activities = List(workflow.activities.map(Activity));
-      const lanes = List(workflow.lanes.map(Lane));
+      const lanes = List(workflow.lanes.map(
+        lane => Lane({ id: lane.id, performers: List(lane.performers) })));
       const transitions = Map(workflow.transitions.map(trans => [
         trans.id,
         Transition({
@@ -82,7 +82,6 @@ export default function pack(state = initialState, action) {
       return Workflow({
         id: workflow.id,
         name: workflow.name,
-        loaded: true,
         lanes,
         activities,
         transitions,
