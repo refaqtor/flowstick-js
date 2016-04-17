@@ -38,8 +38,9 @@ class Package extends PureComponent {
     const { focusedObject, lanes, lanesWidth, activities,
             transitions } = currentWorkflow;
     return (
-      <div>
+      <div className="columns" style={{ height: '100%' }}>
         <Workflow
+          className="column is-quadruple"
           lanes={lanes}
           lanesWidth={lanesWidth}
           activities={activities}

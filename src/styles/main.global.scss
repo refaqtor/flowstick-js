@@ -11,7 +11,11 @@ body {
   font-size: $fs-font-size-dflt;
   background: $fs-clr-bg-dark;
   color: $fs-clr-text-dflt;
-  height: 100vh;
-  width: 100vw;
   overflow: hidden;
+}
+html,
+body,
+#root {
+  min-height: 100vh;
+  min-width: 100vw;
 }

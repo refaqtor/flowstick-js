@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
+import classnames from 'classnames';
 
 import PureComponent from '../PureComponent';
 import { Transitions } from './Transition';
@@ -22,9 +23,9 @@ export default class Workflow extends PureComponent {
   render() {
     const { lanes, lanesWidth, activities, transitions,
             dragActivity, stopDragActivity, focusedObject,
-            focusObject } = this.props;
+            focusObject, className } = this.props;
     return (
-      <section className={styles.process}>
+      <section className={classnames(className, styles.process)}>
         <Lanes lanes={lanes} width={lanesWidth} />
         <Activities activities={activities}
           focusActivity={focusObject.bind(undefined, 'activity')}

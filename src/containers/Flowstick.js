@@ -13,7 +13,7 @@ export default class Flowstick extends Component {
 
   render() {
     return (
-      <div>
+      <div style={{ height: '100vh' }}>
         {this.props.children}
         {DevTools ? <DevTools /> : null}
       </div>
