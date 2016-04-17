@@ -111,6 +111,8 @@ function getViewTransistions(process, activities) {
 
 export const getPackage = state => state.package;
 
+export const getLoading = createSelector(getPackage, pack => !pack.loaded);
+
 export const getWorkflows = createSelector(
   getPackage,
   pack => pack.workflows

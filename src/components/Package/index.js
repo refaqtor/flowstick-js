@@ -8,7 +8,7 @@ import Workflow from '../Workflow';
 import { dragActivity, stopDragActivity,
          focusObject } from '../../actions/workflow';
 import { loadPackage } from '../../actions/package';
-import { getCurrentWorkflow, getWorkflows } from './selectors/Package';
+import { getLoading, getCurrentWorkflow, getWorkflows } from './selectors/Package';
 
 class Package extends PureComponent {
   static propTypes = {
@@ -57,7 +57,7 @@ class Package extends PureComponent {
 function mapStateToProps(state) {
   const { loaded } = state.package;
   return {
-    loading: !loaded,
+    loading: getLoading(state),
     workflows: getWorkflows(state),
     currentWorkflow: getCurrentWorkflow(state),
   };
