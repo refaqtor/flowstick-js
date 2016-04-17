@@ -44,23 +44,17 @@ export const Workflow = Record({
 
 export const Package = Record({
   filename: undefined,
-  currentWorkflow: undefined,
   loaded: false,
   workflows: List(),
 });
 
-function updateCurrentWorkflow(pack, action) {
-  const oldcur = pack.currentWorkflow;
-  const newcur = WorkflowReducer(oldcur, action);
-  if (newcur !== oldcur) {
+function updateWorkflows(pack, action) {
+  const oldwfs = pack.workflows;
+  const newwfs = WorkflowReducer(oldwfs, action);
+  if (oldwfs !== newwfs) {
     // Do a shallow check to avoid updates to the component tree when
     // the workflowReducer does nothing.
-    const curIndex = pack.workflows.findIndex(wf => wf.id === newcur.id);
-    const workflows = pack.workflows.set(curIndex, newcur);
-    return pack.merge({
-      workflows,
-      currentWorkflow: newcur,
-    });
+    return pack.merge({ workflows: newwfs });
   }
   return pack;
 }
@@ -95,13 +89,12 @@ export default function pack(state = initialState, action) {
     });
     return state.merge({
       loaded: true,
-      currentWorkflow: workflows[0],
       workflows,
     });
   }
 
   default:
-    return updateCurrentWorkflow(state, action);
+    return updateWorkflows(state, action);
 
   }
 }

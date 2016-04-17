@@ -10,7 +10,6 @@ describe('Package Reducer', () => {
 
   const halfLoadedPackage = Package({
     filename: 'somefilename.xpdl',
-    currentWorkflow: undefined,
     loaded: false,
     workflows: List(),
   });
@@ -18,7 +17,6 @@ describe('Package Reducer', () => {
   it('should have a default state without any interesting propeties.', () => {
     expect(packageReducer(undefined, {}).toJS(), 'to equal', {
       filename: undefined,
-      currentWorkflow: undefined,
       loaded: false,
       workflows: [],
     });
@@ -27,7 +25,6 @@ describe('Package Reducer', () => {
   it('should, on package start load, nuke the state and set filename.', () => {
     const statefulPackage = Package({
       filename: 'somefilename.xpdl',
-      currentWorkflow: Workflow(),
       loaded: true,
       workflows: List([Workflow()]),
     });
@@ -37,7 +34,6 @@ describe('Package Reducer', () => {
     };
     expect(packageReducer(statefulPackage, action).toJS(), 'to equal', {
       filename: 'newfilename.xpdl',
-      currentWorkflow: undefined,
       loaded: false,
       workflows: [],
     });
@@ -50,7 +46,6 @@ describe('Package Reducer', () => {
     };
     expect(packageReducer(halfLoadedPackage, action).toJS(), 'to equal', {
       filename: 'somefilename.xpdl',
-      currentWorkflow: undefined,
       loaded: true,
       workflows: [],
     });
@@ -96,7 +91,6 @@ describe('Package Reducer', () => {
     };
     expect(packageReducer(halfLoadedPackage, action).toJS(), 'to equal', {
       filename: 'somefilename.xpdl',
-      currentWorkflow: expectedWorkflow1,
       loaded: true,
       workflows: [
         expectedWorkflow1,
@@ -105,7 +99,7 @@ describe('Package Reducer', () => {
     });
   });
 
-  describe('Current Workflow Reducer', () => {
+  describe('Workflows Reducer Callthrough', () => {
 
     let workflowReducerResult;
 
@@ -119,27 +113,24 @@ describe('Package Reducer', () => {
 
     it('should not create new state when workflow reducer does not change ' +
        'the underlying state.', () => {
-      const originalCurrentWorkflow = workflowReducerResult = {};
+      const originalWorkflows = workflowReducerResult = {};
       const statePackage = Package({
-        currentWorkflow: originalCurrentWorkflow,
+        workflows: originalWorkflows,
       });
       expect(packageReducer(statePackage, {}), 'to be', statePackage);
     });
 
     it('should update workflows when workflow reducers does change the ' +
        'underlying state.', () => {
-      workflowReducerResult = Workflow({ id: '1' });
-      const originalCurrentWorkflow = Workflow({ id: '1' });
+      const workflow = Workflow();
       const otherWorkflow = Workflow();
+      workflowReducerResult = List([workflow.merge({ id: 'new' }), otherWorkflow]);
       const statePackage = Package({
-        currentWorkflow: originalCurrentWorkflow,
-        workflows: List([otherWorkflow, originalCurrentWorkflow]),
+        workflows: List([workflow, otherWorkflow]),
       });
       const res = packageReducer(statePackage, {});
       expect(res, 'not to be', statePackage);
-      expect(res.currentWorkflow, 'to be', workflowReducerResult);
-      expect(res.workflows.get(0), 'to be', otherWorkflow);
-      expect(res.workflows.get(1), 'to be', workflowReducerResult);
+      expect(res.workflows, 'to be', workflowReducerResult);
     });
   });
 

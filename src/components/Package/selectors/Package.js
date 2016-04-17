@@ -33,6 +33,7 @@ const ViewSegment = Record({
 });
 
 const CurrentWorkflow = Record({
+  id: undefined,
   lanesWidth: MIN_LANE_WIDTH,
   lanes: List(),
   activities: List(),
@@ -109,6 +110,7 @@ function getViewTransistions(process, activities) {
   );
 }
 
+const getCurrentWorkflowId = (state, props) => props.currentWorkflowId;
 export const getPackage = state => state.package;
 
 export const getLoading = createSelector(getPackage, pack => !pack.loaded);
@@ -120,11 +122,11 @@ export const getWorkflows = createSelector(
 
 export const getCurrentWorkflow = createSelector(
   getPackage,
-  pack => {
-    const currentWf = pack.currentWorkflow;
-    if (!currentWf) {
-      return CurrentWorkflow();
-    }
+  getCurrentWorkflowId,
+  (pack, currentWorkflowId) => {
+    const workflows = pack.workflows;
+    const currentWf = currentWorkflowId && workflows.find(wf => wf.id === currentWorkflowId);
+    if (!currentWf) { return undefined; }
     const lanes = getViewLanes(currentWf);
     const baseActivites = currentWf.activities;
     const activities = getViewActivities(baseActivites, lanes);
@@ -136,6 +138,7 @@ export const getCurrentWorkflow = createSelector(
       focusedObject = activities.find(act => act.id === focusId);
     }
     return CurrentWorkflow({
+      id: currentWf.id,
       focusedObject,
       lanes,
       lanesWidth,

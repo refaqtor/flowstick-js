@@ -6,6 +6,9 @@ import PackagePage from '../containers/PackagePage';
 
 export default (
   <Route path="/" component={Flowstick}>
+    <Route path="packages/:packageFilename/" component={PackagePage}>
+      <Route path="workflows/:workflowId/" />
+    </Route>
     <IndexRoute component={PackagePage} />
   </Route>
 );
