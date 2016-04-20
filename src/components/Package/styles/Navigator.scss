@@ -1,0 +1,27 @@
+@import '../../../styles/vars.global';
+
+$list-item-padding: 8px;
+$list-active-border-size: 4px;
+
+.list {
+  padding: ($list-item-padding * 2) 0;
+}
+.item {
+  display: block;
+  a {
+    display: block;
+    padding: $list-item-padding ($list-item-padding * 3);
+  }
+}
+.itemActive {
+  border-left: $list-active-border-size solid $fs-clr-accent-highlight;
+  a,
+  a:hover {
+    color: $fs-clr-text-highlight;
+    padding: $list-item-padding ($list-item-padding * 3 - $list-active-border-size);
+  }
+}
+.listHeading {
+  text-transform: uppercase;
+  padding: $list-item-padding ($list-item-padding * 3);
+}

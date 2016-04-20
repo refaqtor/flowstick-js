@@ -1,7 +1,7 @@
 import { Record, List, Map } from 'immutable';
 import { createSelector } from 'reselect';
 
-import { ACTIVITY_HEIGHT, ACTIVITY_WIDTH } from '../../Workflow/Activity';
+import { ACTIVITY_HEIGHT, ACTIVITY_WIDTH } from '../../components/Workflow/Activity';
 
 const HALF_ACTIVITY_HEIGHT = ACTIVITY_HEIGHT / 2;
 const HALF_ACTIVITY_WIDTH = ACTIVITY_WIDTH / 2;
@@ -110,7 +110,8 @@ function getViewTransistions(process, activities) {
   );
 }
 
-const getCurrentWorkflowId = (state, props) => props.currentWorkflowId;
+const getCurrentWorkflowId = (state, props) => props.params.workflowId;
+
 export const getPackage = state => state.package;
 
 export const getLoading = createSelector(getPackage, pack => !pack.loaded);
@@ -125,7 +126,8 @@ export const getCurrentWorkflow = createSelector(
   getCurrentWorkflowId,
   (pack, currentWorkflowId) => {
     const workflows = pack.workflows;
-    const currentWf = currentWorkflowId && workflows.find(wf => wf.id === currentWorkflowId);
+    const currentWf = currentWorkflowId && workflows
+      .find(wf => wf.id === currentWorkflowId);
     if (!currentWf) { return undefined; }
     const lanes = getViewLanes(currentWf);
     const baseActivites = currentWf.activities;
