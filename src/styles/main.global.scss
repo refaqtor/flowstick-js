@@ -19,3 +19,10 @@ body,
   min-height: 100vh;
   min-width: 100vw;
 }
+a {
+  color: $fs-clr-link-dflt;
+  text-decoration: none;
+}
+a:hover {
+  color: $fs-clr-link-hover;
+}
