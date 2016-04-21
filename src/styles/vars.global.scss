@@ -6,11 +6,12 @@ $fs-font-size-dflt: 14px;
 $fs-clr-text-dflt: #E6E6E6;
 $fs-clr-text-highlight: #EFEFEF;
 $fs-clr-accent-highlight: #80CBC4;
+$fs-clr-accent-secondary: #C26F00;
 $fs-clr-bg-dark: #263238;
 $fs-clr-bg-medium-dark: #3B464B;
 $fs-clr-bg-light-dark: #546E7A;
 $fs-clr-link-dflt: #5E7C8A;
-$fs-clr-link-hover: #afbdc4;
+$fs-clr-link-hover: #AFBDC4;
 
 // Shadows
 $fs-sha-one: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
@@ -28,3 +29,11 @@ $fs-zindex-5: 800;
 $fs-zindex-6: 1000;
 $fs-zindex-7: 10000;
 $fs-zindex-focused: $fs-zindex-6;
+$fs-zindex-lane: $fs-zindex-0;
+$fs-zindex-transition: $fs-zindex-1;
+$fs-zindex-activity: $fs-zindex-3;
+
+// Animations
+$fs-ani-slow: 0.35s ease-in;
+$fs-ani-medium: 0.25s ease-in;
+$fs-ani-fast: 0.15s ease-in;

@@ -1,18 +1,22 @@
 @import '../../../styles/vars.global';
 
 .activity {
+  transition: color $fs-ani-medium,
+              background $fs-ani-medium,
+              box-shadow $fs-ani-medium;
   background-color: $fs-clr-bg-medium-dark;
   border-radius: 2px;
   position: absolute;
-  box-shadow: $fs-sha-two;
-  z-index: $fs-zindex-2;
+  box-shadow: $fs-sha-one;
+  z-index: $fs-zindex-activity;
   text-overflow: ellipsis;
   overflow: hidden;
   padding: 5px;
   cursor: move;
 }
 .focused {
-  background-color: $fs-clr-bg-light-dark;
+  background-color: $fs-clr-accent-secondary;
   z-index: $fs-zindex-focused;
-  box-shadow: $fs-sha-four;
+  box-shadow: $fs-sha-three;
+  color: $fs-clr-text-highlight;
 }

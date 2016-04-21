@@ -6,9 +6,10 @@ import { ACTIVITY_HEIGHT, ACTIVITY_WIDTH } from '../../components/Workflow/Activ
 const HALF_ACTIVITY_HEIGHT = ACTIVITY_HEIGHT / 2;
 const HALF_ACTIVITY_WIDTH = ACTIVITY_WIDTH / 2;
 
-const LANE_BUFFER = 15;
+const WIDTH_LANE_BUFFER = 100;
+const HEIGHT_LANE_BUFFER = 20;
 const MIN_LANE_HEIGHT = 150;
-const MIN_LANE_WIDTH = 600;
+const MIN_LANE_WIDTH = 900;
 
 const ViewLane = Record({
   id: undefined,
@@ -59,14 +60,13 @@ function getViewLanes(process) {
   const activities = process.activities;
   const partitions = activities.groupBy(act => act.laneId);
   const maxByLane = partitions.map(
-    activities => activities.map(getActivityBottom).max() + LANE_BUFFER
+    activities => activities.map(getActivityBottom).max() + HEIGHT_LANE_BUFFER
   );
   return process.lanes.reduce((accum, lane) => {
     const prevLane = accum.last();
     const y = prevLane ? prevLane.y + prevLane.height : 0;
     const tenativeHeight = maxByLane.get(lane.id, MIN_LANE_HEIGHT);
-    const height = tenativeHeight < MIN_LANE_HEIGHT ?
-      MIN_LANE_HEIGHT : tenativeHeight;
+    const height = Math.max(tenativeHeight, MIN_LANE_HEIGHT);
     return accum.push(ViewLane({
       y,
       height,
@@ -133,7 +133,10 @@ export const getCurrentWorkflow = createSelector(
     const baseActivites = currentWf.activities;
     const activities = getViewActivities(baseActivites, lanes);
     const transitions = getViewTransistions(currentWf, activities);
-    const lanesWidth = baseActivites.map(getActivityRight).max() + LANE_BUFFER;
+    const lanesWidth = Math.max(
+      baseActivites.map(getActivityRight).max() + WIDTH_LANE_BUFFER,
+      MIN_LANE_WIDTH
+    );
     let { focusedObject } = currentWf;
     if (focusedObject && focusedObject.type === 'activity') {
       const focusId = focusedObject.object.id;

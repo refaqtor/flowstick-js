@@ -1,24 +1,24 @@
-.transitionwrap {
-  z-index: 40;
+@import '../../../styles/vars.global';
+
+.transitionWrap {
+  z-index: $fs-zindex-transition;
   position: absolute;
 }
 
 .transition {
-  background-color: black;
+  background-color: $fs-clr-bg-medium-dark;
   width: 100%;
-  height: 4px;
-  transition: background 0.2s ease-in;
+  height: 3px;
+  transition: background $fs-ani-medium;
   margin-top: 3px;
   position: relative;
-  z-index: 40;
   &::after {
     position: absolute;
-    top: -5px;
+    top: -7px;
     right: left;
     content: '<';
-    color: red;
-    font-size: 15px;
+    color: $fs-clr-accent-highlight;
+    font-size: 16px;
     font-weight: bold;
-    z-index: 45;
   }
 }

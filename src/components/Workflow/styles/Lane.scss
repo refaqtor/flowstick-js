@@ -1,6 +1,11 @@
+@import '../../../styles/vars.global';
+
 .lane {
-  border: 3px solid black;
+  border: 1px solid rgba($fs-clr-text-dflt, 0.2);
   position: absolute;
   width: 100%;
-  z-index: 10;
+  z-index: $fs-zindex-lane;
+  &:not(:last-child) {
+    border-bottom: none;
+  }
 }

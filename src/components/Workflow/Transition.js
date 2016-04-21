@@ -43,7 +43,7 @@ export class Segment extends PureComponent {
     if (!to || !from) { return null; }
     const inlineStyles = this.styles(from, to);
     return (
-      <div className={styles.transitionwrap} style={inlineStyles}>
+      <div className={styles.transitionWrap} style={inlineStyles}>
         <div className={styles.transition} />
       </div>
     );
