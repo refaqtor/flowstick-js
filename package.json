@@ -13,6 +13,8 @@
     "build": "cross-env NODE_ENV=production webpack --config webpack.config.production.js --progress --profile --colors",
     "start": "cross-env NODE_ENV=production electron ./",
     "start-hot": "cross-env HOT=1 NODE_ENV=development electron ./",
+    "package": "cross-env NODE_ENV=production node package.js",
+    "package-all": "npm run package -- --all",
     "postinstall": "node node_modules/fbjs-scripts/node/check-dev-engines.js package.json",
     "dev": "concurrently --kill-others \"npm run hot-server\" \"npm run start-hot\""
   },
@@ -36,6 +38,7 @@
     "email": "idealeric@gmail.com"
   },
   "devDependencies": {
+    "asar": "0.11.0",
     "babel-core": "^6.7.4",
     "babel-eslint": "^6.0.0",
     "babel-loader": "^6.2.4",

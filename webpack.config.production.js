@@ -19,15 +19,13 @@ config.module.loaders.push({
   test: /\.global\.scss$/,
   loader: ExtractTextPlugin.extract(
     'style-loader',
-    'css-loader',
-    'sass-loader'
+    'css-loader!sass-loader'
   ),
 }, {
   test: /^((?!\.global).)*\.scss$/,
   loader: ExtractTextPlugin.extract(
     'style-loader',
-    'css-loader?' + cssConfig,
-    'sass-loader'
+    'css-loader?' + cssConfig + '!sass-loader'
   ),
 });
 
