@@ -1,24 +1,30 @@
 @import '../../../styles/vars.global';
 
+$wrap-size: 10px;
 .transitionWrap {
   z-index: $fs-zindex-transition;
   position: absolute;
 }
 
 .transition {
+  $arrow-size: 16px;
+  $transition-size: 3px;
   background-color: $fs-clr-bg-alternative;
   width: 100%;
-  height: 3px;
+  height: $transition-size;
   transition: background $fs-ani-medium;
-  margin-top: 3px;
+  margin-top: $wrap-size / 2 - $transition-size / 2;
   position: relative;
   &::after {
+    font-family: 'Material Icons';
     position: absolute;
-    top: -7px;
-    right: left;
-    content: '<';
+    top: 50%;
+    margin-top: -$arrow-size / 2;
+    left: -2px;
+    transform: rotate(-90deg);
+    content: 'navigation';
     color: $fs-clr-accent-highlight;
-    font-size: 16px;
+    font-size: $arrow-size;
     font-weight: bold;
   }
 }
