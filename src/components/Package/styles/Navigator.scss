@@ -1,6 +1,7 @@
 @import '../../../styles/vars.global';
 
-$list-item-padding: 8px;
+$list-item-padding: 7px;
+$list-item-width-plus-padding: $fs-icon-small + ($list-item-padding * 1.5);
 $list-active-border-size: 4px;
 
 .list {
@@ -9,8 +10,23 @@ $list-active-border-size: 4px;
 .item {
   display: block;
   a {
+    outline: none;
+    position: relative;
     display: block;
-    padding: $list-item-padding ($list-item-padding * 3);
+    padding: $list-item-padding;
+    padding-left: ($list-item-padding * 3 + $list-item-width-plus-padding);
+  }
+  i {
+    transition: color $fs-ani-fast;
+    position: absolute;
+    top: 50%;
+    margin-top: -($fs-icon-small / 2);
+    left: $list-item-padding * 3;
+    color: $fs-clr-bg-alternative;
+    font-size: $fs-icon-small;
+  }
+  a:hover i {
+    color: $fs-clr-link-hover;
   }
 }
 .itemActive {
@@ -18,7 +34,11 @@ $list-active-border-size: 4px;
   a,
   a:hover {
     color: $fs-clr-text-highlight;
-    padding: $list-item-padding ($list-item-padding * 3 - $list-active-border-size);
+    padding-left: $list-item-padding * 3 + $list-item-width-plus-padding - $list-active-border-size;
+    i {
+      color: $fs-clr-text-highlight;
+      left: $list-item-padding * 3 - $list-active-border-size;
+    }
   }
 }
 .listHeading {

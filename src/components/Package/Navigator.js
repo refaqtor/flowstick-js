@@ -17,6 +17,8 @@ export default class WorkflowNavigator extends PureComponent {
     <li className={classnames(styles.item, styles.listHeading)}>
       Workflows
     </li>
+  static WorkflowIcon =
+    <i className="material-icons">timeline</i>
 
   render() {
     const { workflows, className, currentWorkflow } = this.props;
@@ -31,6 +33,7 @@ export default class WorkflowNavigator extends PureComponent {
           return (
             <li key={wf.id} className={classes}>
               <Link to={`/packages/${EQFN}/workflows/${wf.id}/`}>
+                {WorkflowNavigator.WorkflowIcon}
                 {wf.name}
               </Link>
             </li>
