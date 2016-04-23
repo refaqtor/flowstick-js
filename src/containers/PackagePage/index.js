@@ -1,10 +1,10 @@
-import React, { PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
+import PureRenderMixin from 'react-addons-pure-render-mixin';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import Package from '../../components/Package';
-import PureComponent from '../../components/PureComponent';
 import { dragActivity, stopDragActivity,
          focusObject } from '../../actions/workflow';
 import { loadPackage } from '../../actions/package';
@@ -12,12 +12,21 @@ import { getLoading, getCurrentWorkflow, getWorkflows } from './selectors';
 
 const getFilename = props => props.params.packageFilename;
 
-class PackagePage extends PureComponent {
+class PackagePage extends Component {
   static propTypes = {
     params: PropTypes.object.isRequired,
     loading: PropTypes.bool.isRequired,
+    loadPackage: PropTypes.func.isRequired,
+    dragActivity: PropTypes.func.isRequired,
+    focusObject: PropTypes.func.isRequired,
+    stopDragActivity: PropTypes.func.isRequired,
     workflows: ImmutablePropTypes.list.isRequired,
     currentWorkflow: ImmutablePropTypes.record,
+  }
+
+  constructor(props) {
+    super(props);
+    this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
   }
 
   loadPackage(filename) {

@@ -1,17 +1,18 @@
-import React, { PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
+import PureRenderMixin from 'react-addons-pure-render-mixin';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { Link } from 'react-router';
 import classnames from 'classnames';
 
 import { escapeFilename } from '../../file';
-import PureComponent from '../PureComponent';
 import styles from './styles/Navigator';
 
-export default class WorkflowNavigator extends PureComponent {
+export default class WorkflowNavigator extends Component {
   static propTypes = {
     workflows: ImmutablePropTypes.list.isRequired,
     currentWorkflow: ImmutablePropTypes.record,
     filename: PropTypes.string.isRequired,
+    className: PropTypes.string,
   }
 
   static WorkflowsHeading =
@@ -21,6 +22,11 @@ export default class WorkflowNavigator extends PureComponent {
 
   static WorkflowIcon =
     <i className="material-icons">timeline</i>
+
+  constructor(props) {
+    super(props);
+    this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
+  }
 
   render() {
     const { filename, workflows, className, currentWorkflow } = this.props;

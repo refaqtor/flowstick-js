@@ -1,7 +1,7 @@
-import React, { PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
+import PureRenderMixin from 'react-addons-pure-render-mixin';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 
-import PureComponent from '../PureComponent';
 import styles from './styles/Transition';
 import { HALF_ACTIVITY_HEIGHT, HALF_ACTIVITY_WIDTH } from './Activity';
 
@@ -13,10 +13,15 @@ const POINT = PropTypes.shape({
 const SEGMENT_THICKNESS = 10;
 const ACTIVITY_DIAGONAL_SLOPE = HALF_ACTIVITY_HEIGHT / HALF_ACTIVITY_WIDTH;
 
-export class Segment extends PureComponent {
+export class Segment extends Component {
   static propTypes = {
     from: POINT,
     to: POINT,
+  }
+
+  constructor(props) {
+    super(props);
+    this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
   }
 
   styles(from, to) {
@@ -50,9 +55,14 @@ export class Segment extends PureComponent {
   }
 }
 
-export class Transition extends PureComponent {
+export class Transition extends Component {
   static propTypes = {
     transition: ImmutablePropTypes.record.isRequired,
+  }
+
+  constructor(props) {
+    super(props);
+    this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
   }
 
   closestActivityPoint(activityPoint, fromPoint) {
@@ -127,9 +137,14 @@ export class Transition extends PureComponent {
   }
 }
 
-export class Transitions extends PureComponent {
+export class Transitions extends Component {
   static propTypes = {
     transitions: ImmutablePropTypes.map.isRequired,
+  }
+
+  constructor(props) {
+    super(props);
+    this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
   }
 
   render() {

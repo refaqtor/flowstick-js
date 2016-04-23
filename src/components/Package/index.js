@@ -1,16 +1,21 @@
-import React, { PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
+import PureRenderMixin from 'react-addons-pure-render-mixin';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 
-import PureComponent from '../PureComponent';
 import Workflow from '../Workflow';
 import PackageNavigator from './Navigator';
 
-class CurrentWorkflow extends PureComponent {
+class CurrentWorkflow extends Component {
   static propTypes = {
     currentWorkflow: ImmutablePropTypes.record,
     focusObject: PropTypes.func.isRequired,
     dragActivity: PropTypes.func.isRequired,
     stopDragActivity: PropTypes.func.isRequired,
+  }
+
+  constructor(props) {
+    super(props);
+    this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
   }
 
   stopDragActivity(activityId, activityY) {
@@ -40,7 +45,7 @@ class CurrentWorkflow extends PureComponent {
   }
 }
 
-export default class Package extends PureComponent {
+export default class Package extends Component {
   static propTypes = {
     loading: PropTypes.bool.isRequired,
     currentWorkflowId: PropTypes.string,
@@ -50,6 +55,11 @@ export default class Package extends PureComponent {
     workflows: ImmutablePropTypes.list.isRequired,
     filename: PropTypes.string.isRequired,
     currentWorkflow: ImmutablePropTypes.record,
+  }
+
+  constructor(props) {
+    super(props);
+    this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
   }
 
   render() {

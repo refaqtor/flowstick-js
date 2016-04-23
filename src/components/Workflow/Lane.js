@@ -1,14 +1,19 @@
-import React, { PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
+import PureRenderMixin from 'react-addons-pure-render-mixin';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 
-import PureComponent from '../PureComponent';
 import styles from './styles/Lane';
 
-export class Lane extends PureComponent {
+export class Lane extends Component {
   static propTypes = {
     height: PropTypes.number.isRequired,
     width: PropTypes.number.isRequired,
     y: PropTypes.number.isRequired,
+  }
+
+  constructor(props) {
+    super(props);
+    this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
   }
 
   render() {
@@ -17,10 +22,15 @@ export class Lane extends PureComponent {
   }
 }
 
-export class Lanes extends PureComponent {
+export class Lanes extends Component {
   static propTypes = {
     lanes: ImmutablePropTypes.list.isRequired,
     width: PropTypes.number.isRequired,
+  }
+
+  constructor(props) {
+    super(props);
+    this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
   }
 
   render() {

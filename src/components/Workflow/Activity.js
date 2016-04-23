@@ -1,9 +1,9 @@
-import React, { PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
+import PureRenderMixin from 'react-addons-pure-render-mixin';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { DraggableCore } from 'react-draggable';
 import classnames from 'classnames';
 
-import PureComponent from '../PureComponent';
 import styles from './styles/Activity';
 
 export const ACTIVITY_HEIGHT = 60;
@@ -11,7 +11,7 @@ export const HALF_ACTIVITY_HEIGHT = ACTIVITY_HEIGHT / 2;
 export const ACTIVITY_WIDTH = 90;
 export const HALF_ACTIVITY_WIDTH = ACTIVITY_WIDTH / 2;
 
-export class Activities extends PureComponent {
+export class Activities extends Component {
   static propTypes = {
     activities: ImmutablePropTypes.list.isRequired,
     dragActivity: PropTypes.func.isRequired,
@@ -19,6 +19,11 @@ export class Activities extends PureComponent {
     stopDragActivity: PropTypes.func.isRequired,
     focusedObject: ImmutablePropTypes.record,
   };
+
+  constructor(props) {
+    super(props);
+    this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
+  }
 
   render() {
     const { activities, dragActivity, stopDragActivity,
@@ -37,7 +42,7 @@ export class Activities extends PureComponent {
   }
 }
 
-export class Activity extends PureComponent {
+export class Activity extends Component {
   static propTypes = {
     id: PropTypes.string.isRequired,
     x: PropTypes.number.isRequired,
@@ -47,6 +52,11 @@ export class Activity extends PureComponent {
     onDragStart: PropTypes.func.isRequired,
     onDragStop: PropTypes.func.isRequired,
     focused: PropTypes.bool.isRequired,
+  }
+
+  constructor(props) {
+    super(props);
+    this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
   }
 
   onDragStop() {

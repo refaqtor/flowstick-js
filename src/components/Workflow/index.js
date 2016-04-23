@@ -1,14 +1,14 @@
-import React, { PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
+import PureRenderMixin from 'react-addons-pure-render-mixin';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import classnames from 'classnames';
 
-import PureComponent from '../PureComponent';
 import { Transitions } from './Transition';
 import { Lanes } from './Lane';
 import { Activities } from './Activity';
 import styles from './styles/Workflow';
 
-export default class Workflow extends PureComponent {
+export default class Workflow extends Component {
   static propTypes = {
     dragActivity: PropTypes.func.isRequired,
     stopDragActivity: PropTypes.func.isRequired,
@@ -18,6 +18,12 @@ export default class Workflow extends PureComponent {
     lanes: ImmutablePropTypes.list.isRequired,
     focusedObject: ImmutablePropTypes.record,
     focusObject: PropTypes.func.isRequired,
+    className: PropTypes.string,
+  }
+
+  constructor(props) {
+    super(props);
+    this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
   }
 
   render() {
