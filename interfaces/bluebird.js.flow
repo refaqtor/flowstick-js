@@ -4,4 +4,5 @@ declare module 'bluebird' {
   declare function promisify<A,T>(
     func: (a: A, callback: (err: any, result: T) => void) => void,
     receiver?: any): (a: A) => Promise<T>;
+  declare var exports: Promise;
 }
