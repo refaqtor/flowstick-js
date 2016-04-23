@@ -29,7 +29,7 @@ describe('XPDL', () => {
         xmlParseReject = reject;
       });
     });
-    rewire.__Rewire__('readFileAsync', readFileSpy);
+    rewire.__Rewire__('readFile', readFileSpy);
     rewire.__Rewire__('parseXMLString', xmlParseSpy);
   });
 

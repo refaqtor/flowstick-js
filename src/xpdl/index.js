@@ -1,9 +1,9 @@
 /* @flow */
 import { Parser } from 'xml2js';
 import Promise, { promisify } from 'bluebird';
-import { readFile } from 'fs';
 
 import { parsePackage } from './Package';
+import { readFile } from '../file';
 import type { XMLPackage, XPDLPackage } from './Package';
 
 type RawXML = { 'xpdl:Package': XMLPackage };
@@ -12,7 +12,6 @@ type XMLLevel<C> = { $$?: Array<C> };
 export type XMLChildren<C> = Array<XMLLevel<C>>;
 export type XPDLPoint = string | { x: number, y: number };
 
-const readFileAsync = promisify(readFile);
 const parser = new Parser({
   explicitChildren: true,
   preserveChildrenOrder: true,
@@ -28,7 +27,7 @@ export function safeChildGet(obj: Object, key: string): Object {
 }
 
 export function loadPackageXPDL(filename: string): Promise<XPDLPackage> {
-  return readFileAsync(filename)
+  return readFile(filename)
     .then(parseXMLString)
     .then(parseXMLToXPDL);
 }
