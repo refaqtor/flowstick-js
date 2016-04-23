@@ -8,6 +8,9 @@
     "test": {
       "plugins": [
         ["rewire"],
+        ["module-alias", [
+          { "src": "./test/mocks/electron", "expose": "electron" }
+        ]],
         ["webpack-loaders", { "config": "webpack.config.node.js", "verbose": false }]
       ]
     }
