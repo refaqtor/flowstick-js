@@ -1,6 +1,5 @@
 import React, { PropTypes } from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
-import { Link } from 'react-router';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
@@ -39,14 +38,15 @@ class PackagePage extends PureComponent {
   }
 
   render() {
-    const { params, loading, workflows, currentWorkflow,
+    const { loading, workflows, currentWorkflow,
             focusObject, stopDragActivity, dragActivity } = this.props;
-    const { packageFilename } = params || {};
-    if (!packageFilename) {
-      return <div>Nothing here</div>;
+    const filename = getFilename(this.props);
+    if (!filename) {
+      return <h1>Nothing to see...</h1>;
     }
     return (
       <Package
+        filename={filename}
         loading={loading}
         workflows={workflows}
         focusObject={focusObject}

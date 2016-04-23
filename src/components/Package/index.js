@@ -48,18 +48,20 @@ export default class Package extends PureComponent {
     dragActivity: PropTypes.func.isRequired,
     stopDragActivity: PropTypes.func.isRequired,
     workflows: ImmutablePropTypes.list.isRequired,
+    filename: PropTypes.string.isRequired,
     currentWorkflow: ImmutablePropTypes.record,
   }
 
   render() {
     const { workflows, stopDragActivity, dragActivity, focusObject, loading,
-            currentWorkflow } = this.props;
+            currentWorkflow, filename } = this.props;
     if (loading) {
       return <h1>Loading...</h1>;
     }
     return (
       <div className="columns" style={{ height: '100%' }}>
         <PackageNavigator
+          filename={filename}
           className="column"
           workflows={workflows}
           currentWorkflow={currentWorkflow} />
