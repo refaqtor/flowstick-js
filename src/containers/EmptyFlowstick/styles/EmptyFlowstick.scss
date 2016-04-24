@@ -1,0 +1,12 @@
+@import '../../../styles/vars.global';
+
+.main {
+  text-align: center;
+  align-items: center;
+  color: $fs-clr-bg-light;
+  font-size: $fs-font-size-large;
+  line-height: $fs-line-height-dflt;
+  i {
+    font-size: $fs-icon-large;
+  }
+}

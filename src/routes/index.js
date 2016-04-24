@@ -2,6 +2,7 @@ import React from 'react';
 import { Route, IndexRoute } from 'react-router';
 
 import Flowstick from '../containers/Flowstick';
+import EmptyFlowstick from '../containers/EmptyFlowstick';
 import PackagePage from '../containers/PackagePage';
 
 export default (
@@ -9,6 +10,6 @@ export default (
     <Route path="packages/:packageFilename/" component={PackagePage}>
       <Route path="workflows/:workflowId/" />
     </Route>
-    <IndexRoute component={PackagePage} />
+    <IndexRoute component={EmptyFlowstick} />
   </Route>
 );
