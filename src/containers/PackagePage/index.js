@@ -3,6 +3,7 @@ import PureRenderMixin from 'react-addons-pure-render-mixin';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import Helmet from 'react-helmet';
 
 import Package from '../../components/Package';
 import { dragActivity, stopDragActivity,
@@ -55,6 +56,7 @@ class PackagePage extends Component {
     }
     return (
       <section className="columns vert-columns column">
+        <Helmet title={filename + ' | Flowstick'} />
         <Package
           filename={filename}
           loading={loading}
