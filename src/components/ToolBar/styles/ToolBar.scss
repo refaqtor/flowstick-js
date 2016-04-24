@@ -1,0 +1,20 @@
+@import '../../../styles/vars.global';
+
+$button-padding: $fs-spacing-unit;
+$button-size: $fs-icon-medium + (2 * $button-padding);
+
+.toolbar {
+  cursor: default;
+  list-style: none;
+  li {
+    cursor: pointer;
+    font-size: $fs-icon-medium;
+    padding: $button-padding;
+    width: $button-size;
+    height: $button-size;
+  }
+}
+.buttonDisabled {
+  color: $fs-clr-text-disabled;
+  cursor: default !important;
+}
