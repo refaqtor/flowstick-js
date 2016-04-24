@@ -1,0 +1,7 @@
+@import '../../../styles/vars.global';
+
+.appBar {
+  height: 70px;
+  padding: 0 (2 * $fs-spacing-unit);
+  box-shadow: $fs-sha-two;
+}

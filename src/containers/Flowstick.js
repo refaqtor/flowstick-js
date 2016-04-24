@@ -1,9 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 
-let DevTools;
+import { getFilenameFromUserPrompt, escapeFilename } from '../file';
+import AppHeader from '../components/AppHeader';
+
+let DevTools = null;
 
 if (process.env.NODE_ENV !== 'production') {
   DevTools = require('./DevTools');
+  DevTools = <DevTools />;
 }
 
 export default class Flowstick extends Component {
@@ -11,11 +15,23 @@ export default class Flowstick extends Component {
     children: PropTypes.element.isRequired,
   }
 
+  static styles = {
+    height: '100vh',
+  }
+
+  openFile() {
+    getFilenameFromUserPrompt()
+      .then(filename => {
+        window.location.hash = `/packages/${escapeFilename(filename)}/`;
+      }, () => {});
+  }
+
   render() {
     return (
-      <div style={{ height: '100vh' }}>
+      <div style={Flowstick.styles}>
+        <AppHeader openFile={this.openFile} />
         {this.props.children}
-        {DevTools ? <DevTools /> : null}
+        {DevTools}
       </div>
     );
   }
