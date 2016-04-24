@@ -1,9 +1,11 @@
 import React, { Component, PropTypes } from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import ImmutablePropTypes from 'react-immutable-proptypes';
+import classnames from 'classnames';
 
 import Workflow from '../Workflow';
 import PackageNavigator from './Navigator';
+import wfStyles from './styles/CurrentWorkflow';
 
 class CurrentWorkflow extends Component {
   static propTypes = {
@@ -12,6 +14,8 @@ class CurrentWorkflow extends Component {
     dragActivity: PropTypes.func.isRequired,
     stopDragActivity: PropTypes.func.isRequired,
   }
+
+  static classNames = classnames('column', 'is-quadruple', wfStyles.main)
 
   constructor(props) {
     super(props);
@@ -32,7 +36,7 @@ class CurrentWorkflow extends Component {
     const { lanes, lanesWidth, activities, transitions,
             focusedObject } = currentWorkflow;
     return (
-      <Workflow className="column is-quadruple"
+      <Workflow className={CurrentWorkflow.classNames}
         lanes={lanes}
         lanesWidth={lanesWidth}
         activities={activities}
@@ -57,6 +61,8 @@ export default class Package extends Component {
     currentWorkflow: ImmutablePropTypes.record,
   }
 
+  static naviagtorStyles = { maxWidth: '25%' }
+
   constructor(props) {
     super(props);
     this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
@@ -73,6 +79,7 @@ export default class Package extends Component {
         <PackageNavigator
           filename={filename}
           className="column"
+          style={Package.naviagtorStyles}
           workflows={workflows}
           currentWorkflow={currentWorkflow} />
         <CurrentWorkflow

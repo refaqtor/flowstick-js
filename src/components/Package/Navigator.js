@@ -13,6 +13,7 @@ export default class WorkflowNavigator extends Component {
     currentWorkflow: ImmutablePropTypes.record,
     filename: PropTypes.string.isRequired,
     className: PropTypes.string,
+    style: PropTypes.object,
   }
 
   static WorkflowsHeading =
@@ -29,10 +30,10 @@ export default class WorkflowNavigator extends Component {
   }
 
   render() {
-    const { filename, workflows, className, currentWorkflow } = this.props;
+    const { filename, workflows, className, style, currentWorkflow } = this.props;
     const { id } = currentWorkflow || {};
     return (
-      <ul className={classnames(className, styles.list)}>
+      <ul className={classnames(className, styles.list)} style={style}>
         {WorkflowNavigator.WorkflowsHeading}
         {workflows.map(wf => {
           const classes = classnames(styles.item, {
