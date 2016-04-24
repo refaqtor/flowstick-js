@@ -10,7 +10,7 @@ export default class ToolBar extends Component {
     buttons: ImmutablePropTypes.list.isRequired,
   }
 
-  static listClassNames = classnames(styles.toolbar, 'columns')
+  static listClassNames = classnames(styles.toolbar, 'columns', 'unselectable')
 
   constructor(props) {
     super(props);

@@ -28,3 +28,7 @@ a {
 a:hover {
   color: $fs-clr-link-hover;
 }
+.unselectable {
+  -webkit-user-select: none;
+  user-select: none;
+}
