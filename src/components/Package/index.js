@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import ImmutablePropTypes from 'react-immutable-proptypes';
+import ProgressBar from 'react-toolbox/lib/progress_bar';
 import classnames from 'classnames';
 
 import Workflow from '../Workflow';
@@ -72,7 +73,13 @@ export default class Package extends Component {
     const { workflows, stopDragActivity, dragActivity, focusObject, loading,
             currentWorkflow, filename } = this.props;
     if (loading) {
-      return <h1>Loading...</h1>;
+      return (
+        <div className="columns column vert-align">
+          <div className="column" style={{ textAlign: 'center' }}>
+            <ProgressBar type="circular" mode="indeterminate" />
+          </div>
+        </div>
+      );
     }
     return (
       <div className="columns column stretch-columns">

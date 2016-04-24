@@ -5,7 +5,7 @@ import classnames from 'classnames';
 import styles from './styles/EmptyFlowstick';
 
 export default class EmptyFlowstick extends Component {
-  static classNames = classnames('column', 'columns', styles.main)
+  static classNames = classnames('column', 'columns', 'vert-align', styles.main)
 
   render() {
     return (

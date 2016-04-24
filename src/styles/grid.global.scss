@@ -6,6 +6,9 @@
   &.vert-columns {
     flex-direction: column;
   }
+  &.vert-align {
+    align-items: center;
+  }
 }
 .column {
   overflow: hidden;
