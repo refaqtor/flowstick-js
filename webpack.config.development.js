@@ -23,18 +23,20 @@ config.module.loaders.push({
   test: /\.global\.scss$/,
   loaders: [
     'style-loader',
-    'css-loader?sourceMap',
-    'sass-loader?sourceMap',
+    'css-loader?sourceMap!sass-loader?sourceMap',
   ],
 }, {
   test: /^((?!\.global).)*\.scss$/,
   loaders: [
     'style-loader',
     'css-loader?modules&sourceMap' +
-      '&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]',
-    'sass-loader?sourceMap',
+      '&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]' +
+      '!sass-loader?sourceMap' +
+      '!toolbox',
   ],
 });
+
+config.toolbox = { theme: './src/styles/toolbox-theme.global.scss' };
 
 config.plugins.push(
   new webpack.HotModuleReplacementPlugin(),

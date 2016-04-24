@@ -19,15 +19,17 @@ config.module.loaders.push({
   test: /\.global\.scss$/,
   loader: ExtractTextPlugin.extract(
     'style-loader',
-    'css-loader!sass-loader'
+    'css-loader!sass-loader!toolbox'
   ),
 }, {
   test: /^((?!\.global).)*\.scss$/,
   loader: ExtractTextPlugin.extract(
     'style-loader',
-    'css-loader?' + cssConfig + '!sass-loader'
+    'css-loader?' + cssConfig + '!sass-loader!toolbox'
   ),
 });
+
+config.toolbox = { theme: './src/styles/toolbox-theme.global.scss' };
 
 config.plugins.push(
   new webpack.optimize.OccurenceOrderPlugin(),
