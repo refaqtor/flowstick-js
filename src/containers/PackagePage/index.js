@@ -54,14 +54,16 @@ class PackagePage extends Component {
       return <h1>Nothing to see...</h1>;
     }
     return (
-      <Package
-        filename={filename}
-        loading={loading}
-        workflows={workflows}
-        focusObject={focusObject}
-        stopDragActivity={stopDragActivity}
-        dragActivity={dragActivity}
-        currentWorkflow={currentWorkflow} />
+      <section className="columns vert-columns column">
+        <Package
+          filename={filename}
+          loading={loading}
+          workflows={workflows}
+          focusObject={focusObject}
+          stopDragActivity={stopDragActivity}
+          dragActivity={dragActivity}
+          currentWorkflow={currentWorkflow} />
+      </section>
     );
   }
 }

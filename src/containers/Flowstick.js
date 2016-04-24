@@ -28,9 +28,11 @@ export default class Flowstick extends Component {
 
   render() {
     return (
-      <div style={Flowstick.styles}>
+      <div className="columns vert-columns" style={Flowstick.styles}>
         <AppHeader openFile={this.openFile} />
-        {this.props.children}
+        <section className="column columns vert-columns">
+          {this.props.children}
+        </section>
         {DevTools}
       </div>
     );

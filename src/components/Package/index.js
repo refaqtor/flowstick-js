@@ -69,7 +69,7 @@ export default class Package extends Component {
       return <h1>Loading...</h1>;
     }
     return (
-      <div className="columns" style={{ height: '100%' }}>
+      <div className="columns column stretch-columns">
         <PackageNavigator
           filename={filename}
           className="column"

@@ -1,5 +1,11 @@
 .columns {
   display: flex;
+  &.stretch-columns {
+    align-items: stretch;
+  }
+  &.vert-columns {
+    flex-direction: column;
+  }
 }
 .column {
   overflow: hidden;
