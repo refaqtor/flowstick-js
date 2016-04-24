@@ -1,6 +1,6 @@
 @import '../../../styles/vars.global';
 
-$list-item-padding: 7px;
+$list-item-padding: $fs-spacing-unit;
 $list-item-width-plus-padding: $fs-icon-small + ($list-item-padding * 1.5);
 $list-active-border-size: 4px;
 
