@@ -1,110 +1,136 @@
 /* eslint-env mocha */
 import expect from 'unexpected';
 import { spy } from 'sinon';
-import { Promise } from 'bluebird';
 
-import { loadPackageXPDL, __RewireAPI__ as rewire } from '../../xpdl';
+import { parseXMLToXPDL, primeWorker, loadPackageXPDL,
+         __RewireAPI__ as rewire } from '../../xpdl';
 
 describe('XPDL', () => {
 
-  const noFileError = { error: 'no file' };
-  const parseError = { error: 'bad xml' };
-  const fileResult = '<xml></xml>';
-  let failure;
-  let fileSytemPromise, fileSytemResolve, fileSytemReject, readFileSpy;
-  let xmlParseResolve, xmlParseReject, xmlParseSpy;
+  describe('parseXMLToXPDL', () => {
 
-  beforeEach(() => {
-    failure = spy();
-    readFileSpy = spy(() => {
-      fileSytemPromise = new Promise((resolve, reject) => {
-        fileSytemResolve = resolve;
-        fileSytemReject = reject;
-      });
-      return fileSytemPromise;
-    });
-    xmlParseSpy = spy(() => {
-      return new Promise((resolve, reject) => {
-        xmlParseResolve = resolve;
-        xmlParseReject = reject;
-      });
-    });
-    rewire.__Rewire__('readFile', readFileSpy);
-    rewire.__Rewire__('parseXMLString', xmlParseSpy);
-  });
-
-  afterEach(() => {
-    rewire.__ResetDependency__('readFile');
-    rewire.__ResetDependency__('parseXMLString');
-  });
-
-  describe('Errors', () => {
-
-    it('should handle errors thrown by fileread.', () => {
-      const prom = loadPackageXPDL('nofilename')
-        .catch(failure)
-        .finally(() => {
-          expect(readFileSpy.calledOnce, 'to be truthy');
-          expect(readFileSpy.calledWith('nofilename'), 'to be truthy');
-          expect(xmlParseSpy.called, 'to be falsy');
-          expect(failure.calledWith(noFileError), 'to be truthy');
-        });
-      fileSytemReject(noFileError);
-      return prom;
+    before(() => {
+      rewire.__Rewire__('parsePackage', arg => arg);
     });
 
-    it('should handle errors thrown by the XML parsing.', () => {
-      const prom = loadPackageXPDL('filename')
-        .catch(failure)
-        .finally(() => {
-          expect(readFileSpy.calledOnce, 'to be truthy');
-          expect(readFileSpy.calledWith('filename'), 'to be truthy');
-          expect(xmlParseSpy.calledOnce, 'to be truthy');
-          expect(xmlParseSpy.calledWith(fileResult), 'to be truthy');
-          expect(failure.calledWith(parseError), 'to be truthy');
-        });
-      fileSytemPromise.then(() => {
-        xmlParseReject(parseError);
-      });
-      fileSytemResolve(fileResult);
-      return prom;
-    });
-
-  }); // end errors describe
-
-  describe('Success', () => {
-
-    let xmlObj, fakeParsePackage;
-
-    beforeEach(() => {
-      fakeParsePackage = spy(() => xmlObj);
-      xmlObj = undefined;
-      rewire.__Rewire__('parsePackage', fakeParsePackage);
-    });
-
-    afterEach(() => {
+    after(() => {
       rewire.__ResetDependency__('parsePackage');
     });
 
-    it('should parse xpdl packages.', () => {
-      xmlObj = { 'xpdl:Package': 'test' };
-      const prom = loadPackageXPDL('filename')
-        .catch(failure)
-        .finally(() => {
-          expect(readFileSpy.calledOnce, 'to be truthy');
-          expect(readFileSpy.calledWith('filename'), 'to be truthy');
-          expect(xmlParseSpy.calledOnce, 'to be truthy');
-          expect(xmlParseSpy.calledWith(fileResult), 'to be truthy');
-          expect(failure.called, 'to be falsy');
-          expect(fakeParsePackage.calledWith('test'), 'to be truthy');
-        });
-      fileSytemPromise.then(() => {
-        xmlParseResolve(xmlObj);
-      });
-      fileSytemResolve(fileResult);
-      return prom;
+    it('should send the package through the xpdl pipeline.', () => {
+      expect(parseXMLToXPDL({ 'xpdl:Package': 'test' }), 'to be', 'test');
     });
 
-  }); // end Success describe
+  }); // end parseXMLToXPDL describe
+
+  describe('primeWorker', () => {
+
+    let fakeForkedWorker;
+
+    beforeEach(() => {
+      const onSpy = spy();
+      const fakeFork = moduleName => {
+        expect(moduleName, 'to be defined');
+        fakeForkedWorker = { on: onSpy };
+        return fakeForkedWorker;
+      };
+      rewire.__Rewire__('fork', fakeFork);
+    });
+
+    afterEach(() => {
+      rewire.__ResetDependency__('fork');
+    });
+
+    it('should fork out a worker thread.', () => {
+      const res = primeWorker();
+      expect(res, 'to be', fakeForkedWorker);
+    });
+
+    it('should restart the process any time it crashes.', () => {
+      const first = primeWorker();
+      expect(fakeForkedWorker.on.calledWith('exit'), 'to be truthy');
+
+      const second = primeWorker();
+      expect(first, 'to be', second);
+      expect(fakeForkedWorker.on.callCount, 'to be', 1);
+
+      fakeForkedWorker.on.firstCall.args[1]();
+      const third = primeWorker();
+      expect(third, 'not to be', second);
+    });
+
+  }); // end primeWorker describe
+
+  describe('loadPackageXPDL', () => {
+
+    let primeWorkerResult, removeSpy;
+
+    function makeFakePrimeResult(sendFn) {
+      removeSpy = spy();
+      primeWorkerResult = {
+        on(type, fn) {
+          expect(type, 'to be', 'message');
+          primeWorkerResult.$fn = fn;
+        },
+        send: sendFn,
+        removeListener: removeSpy,
+      };
+    }
+
+    beforeEach(() => {
+      const fakePrimeWorker = () => primeWorkerResult;
+      rewire.__Rewire__('primeWorker', fakePrimeWorker);
+    });
+
+    afterEach(() => {
+      rewire.__ResetDependency__('primeWorker');
+    });
+
+    it('should properly error out when .', () => {
+      return loadPackageXPDL().catch(err => {
+        expect(err.message, 'to be', 'There is no XPDL worker running.');
+      });
+    });
+
+    it('should throw errors correctly.', () => {
+      makeFakePrimeResult(msg => {
+        expect(msg, 'to equal', { readFile: 'tstfilname' });
+        primeWorkerResult.$fn({ readOf: 'tstfilname', readError: 'testerr' });
+      });
+      return loadPackageXPDL('tstfilname')
+        .catch(err => {
+          expect(removeSpy.calledWith('message'), 'to be truthy');
+          expect(err.message, 'to be', 'testerr');
+        });
+    });
+
+    it('should send read messages to the worker and relay results.', () => {
+      makeFakePrimeResult(msg => {
+        expect(msg, 'to equal', { readFile: 'tstfilname' });
+        primeWorkerResult.$fn({ readOf: 'tstfilname', readResult: 'testresult' });
+      });
+      return loadPackageXPDL('tstfilname')
+        .then(result => {
+          expect(removeSpy.calledWith('message'), 'to be truthy');
+          expect(result, 'to be', 'testresult');
+        });
+    });
+
+    it('should ignore messages for other requests.', () => {
+      const rejectResolveSpy = spy();
+      const fakePromise = function(fn) {
+        fn(rejectResolveSpy, rejectResolveSpy);
+      };
+      rewire.__Rewire__('Promise', fakePromise);
+      makeFakePrimeResult(msg => {
+        expect(msg, 'to equal', { readFile: 'tstfilname' });
+        primeWorkerResult.$fn({ readOf: 'someotherfile' });
+      });
+      loadPackageXPDL('tstfilname');
+      expect(rejectResolveSpy.callCount, 'to be', 0);
+      rewire.__ResetDependency__('Promise');
+    });
+
+  }); // end loadPackageXPDL describe
 
 });

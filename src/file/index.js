@@ -1,8 +1,7 @@
 /* @flow */
 import { remote } from 'electron';
 
-import { readFile as fsReadFile } from 'fs';
-import Promise, { promisify } from 'bluebird';
+import Promise from 'bluebird';
 
 export function escapeFilename(filename: string): string {
   return filename.replace(/\//g, '%2F');
@@ -26,5 +25,3 @@ export function getFilenameFromUserPrompt(): Promise<string> {
     });
   });
 }
-
-export const readFile: (fn: string) => Promise<Buffer> = promisify(fsReadFile);

@@ -6,6 +6,7 @@ import { syncHistoryWithStore } from 'react-router-redux';
 
 import routes from './routes';
 import configureStore from './store/configureStore';
+import { primeWorker } from './xpdl';
 
 import './styles/main.global';
 
@@ -18,3 +19,5 @@ render(
   </Provider>,
   document.getElementById('root')
 );
+
+primeWorker();
