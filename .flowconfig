@@ -3,6 +3,7 @@ node_modules/iflow-bluebird/index.js.flow
 interfaces/
 
 [ignore]
+.*/release/.*
 .*/dist/.*
 .*/node_modules/.*
 
