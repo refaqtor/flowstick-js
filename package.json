@@ -24,6 +24,7 @@
     ],
     "exclude": [
       "release/**",
+      "dist/**",
       "**/*.spec.js",
       "src/index.js",
       "src/store/**"
