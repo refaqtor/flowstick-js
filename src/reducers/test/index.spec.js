@@ -10,6 +10,7 @@ describe('Reducers Construction', () => {
     expect(reducers(undefined, {}), 'to exhaustively satisfy', {
       routing: expect.it('to be defined'),
       package: expect.it('to be defined'),
+      fileDialog: expect.it('to be defined'),
     });
   });
 
