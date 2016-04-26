@@ -9,6 +9,9 @@
   &.vert-align {
     align-items: center;
   }
+  &.vert-align.vert-columns {
+    justify-content: center;
+  }
 }
 .column {
   overflow: hidden;
@@ -42,4 +45,7 @@
       }
     }
   } // end .column + .column
+  .vert-align.vert-columns & {
+    flex: none;
+  }
 } // end .column

@@ -28,6 +28,15 @@ a {
 a:hover {
   color: $fs-clr-link-hover;
 }
+button[data-react-toolbox="button"] {
+  height: $fs-spacing-unit * 6 !important;
+  font-size: $fs-font-size-button !important;
+  padding: 0 $fs-spacing-unit * 3 !important;
+  color: $fs-clr-text-dflt !important;
+}
+button[disabled] {
+  color: $fs-clr-text-disabled !important;
+}
 .unselectable {
   -webkit-user-select: none;
   user-select: none;

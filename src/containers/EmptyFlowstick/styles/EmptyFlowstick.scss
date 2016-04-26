@@ -8,4 +8,7 @@
   i {
     font-size: $fs-icon-large;
   }
+  button[disabled] {
+    background-color: $fs-clr-accent-secondary-dark;
+  }
 }
