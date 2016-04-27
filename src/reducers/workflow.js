@@ -1,5 +1,67 @@
-import { FocusObject } from './package';
+import { Record, Map, List } from 'immutable';
 import * as WorkflowActions from '../actions/workflow';
+import * as PackageActions from '../actions/package';
+
+export const Workflow = Record({
+  id: undefined,
+  name: undefined,
+  activities: List(),
+  lanes: List(),
+  transitions: Map(),
+  focusedObject: undefined,
+});
+
+export const Activity = Record({
+  id: undefined,
+  name: undefined,
+  laneId: undefined,
+  x: 0,
+  relativeY: 0,
+  draggingDeltaY: 0,
+  draggingDeltaX: 0,
+});
+
+const FocusObject = Record({
+  object: undefined,
+  type: undefined,
+});
+
+const Lane = Record({
+  id: undefined,
+  performers: List(),
+});
+
+const Segment = Record({
+  to: undefined,
+  from: undefined,
+});
+
+const Transition = Record({
+  id: undefined,
+  segments: List(),
+});
+
+function constructWorkflowsState(actionWorkflows) {
+  return List(actionWorkflows.map(workflow => {
+    const activities = List(workflow.activities.map(Activity));
+    const lanes = List(workflow.lanes.map(
+      lane => Lane({ id: lane.id, performers: List(lane.performers) })));
+    const transitions = Map(workflow.transitions.map(trans => [
+      trans.id,
+      Transition({
+        id: trans.id,
+        segments: List(trans.segments.map(Segment)),
+      }),
+    ]));
+    return Workflow({
+      id: workflow.id,
+      name: workflow.name,
+      lanes,
+      activities,
+      transitions,
+    });
+  }));
+}
 
 function updateThings(things, thingId, updater) {
   const foundIndex = things.findIndex(thing => thing.id === thingId);
@@ -14,7 +76,7 @@ function updateActivity(workflows, workflowId, activityId, updater) {
   );
 }
 
-export default function workflow(workflows, action) {
+export default function workflowsReducer(workflows, action) {
   switch (action.type) {
 
   case WorkflowActions.FOCUS_OBJECT: {
@@ -51,6 +113,9 @@ export default function workflow(workflows, action) {
       })
     );
   }
+
+  case PackageActions.FINISH_PACKAGE_LOAD_SUCCESS:
+    return constructWorkflowsState(action.workflows);
 
   default:
     return workflows;

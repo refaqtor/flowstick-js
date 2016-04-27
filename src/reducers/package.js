@@ -1,46 +1,7 @@
-import { Map, Record, List } from 'immutable';
+import { Record, List } from 'immutable';
 
-import WorkflowReducer from './workflow';
+import WorkflowsReducer from './workflow';
 import * as PackageActions from '../actions/package';
-
-export const Activity = Record({
-  id: undefined,
-  name: undefined,
-  laneId: undefined,
-  x: 0,
-  relativeY: 0,
-  draggingDeltaY: 0,
-  draggingDeltaX: 0,
-});
-
-const Lane = Record({
-  id: undefined,
-  performers: List(),
-});
-
-const Segment = Record({
-  to: undefined,
-  from: undefined,
-});
-
-const Transition = Record({
-  id: undefined,
-  segments: List(),
-});
-
-export const FocusObject = Record({
-  object: undefined,
-  type: undefined,
-});
-
-export const Workflow = Record({
-  id: undefined,
-  name: undefined,
-  activities: List(),
-  lanes: List(),
-  transitions: Map(),
-  focusedObject: undefined,
-});
 
 export const Package = Record({
   filename: undefined,
@@ -50,7 +11,7 @@ export const Package = Record({
 
 function updateWorkflows(pack, action) {
   const oldwfs = pack.workflows;
-  const newwfs = WorkflowReducer(oldwfs, action);
+  const newwfs = WorkflowsReducer(oldwfs, action);
   if (oldwfs !== newwfs) {
     // Do a shallow check to avoid updates to the component tree when
     // the workflowReducer does nothing.
@@ -62,39 +23,17 @@ function updateWorkflows(pack, action) {
 const initialState = Package();
 
 export default function pack(state = initialState, action) {
+  let newState = state;
   switch (action.type) {
 
   case PackageActions.START_PACKAGE_LOAD:
-    return initialState.set('filename', action.filename);
+    newState = initialState.set('filename', action.filename);
+    break;
 
-  case PackageActions.FINISH_PACKAGE_LOAD_SUCCESS: {
-    const workflows = action.workflows.map(workflow => {
-      const activities = List(workflow.activities.map(Activity));
-      const lanes = List(workflow.lanes.map(
-        lane => Lane({ id: lane.id, performers: List(lane.performers) })));
-      const transitions = Map(workflow.transitions.map(trans => [
-        trans.id,
-        Transition({
-          id: trans.id,
-          segments: List(trans.segments.map(Segment)),
-        }),
-      ]));
-      return Workflow({
-        id: workflow.id,
-        name: workflow.name,
-        lanes,
-        activities,
-        transitions,
-      });
-    });
-    return state.merge({
-      loaded: true,
-      workflows,
-    });
-  }
-
-  default:
-    return updateWorkflows(state, action);
+  case PackageActions.FINISH_PACKAGE_LOAD_SUCCESS:
+    newState = state.merge({ loaded: true });
+    break;
 
   }
+  return updateWorkflows(newState, action);
 }

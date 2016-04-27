@@ -2,9 +2,9 @@
 import { List } from 'immutable';
 import expect from 'unexpected';
 
-import { Activity, Workflow } from '../package';
+import workflowReducer, { Activity, Workflow } from '../workflow';
 import * as WorkflowActions from '../../actions/workflow';
-import workflowReducer from '../workflow';
+import * as PackageActions from '../../actions/package';
 
 describe('Workflow Reducer', () => {
 
@@ -122,6 +122,50 @@ describe('Workflow Reducer', () => {
     expect(res.get(1), 'to be', original.get(1));
     expect(stateFocused.type, 'to be', 'anytype');
     expect(stateFocused.object, 'to be', newFocusObj);
+  });
+
+  it('should, on package finish, load in all the processed xpdl.', () => {
+    const actionWorkflow1 = {
+      id: '1',
+      name: 'One',
+      activities: [],
+      transitions: [],
+      lanes: [],
+    };
+    const actionWorkflow2 = {
+      id: '2',
+      name: 'Two',
+      lanes: [{ id: 'lane1', performers: ['perf1'] }],
+      activities: [{ id: 'act1', name: 'act1name',
+                     x: 5, relativeY: 10, laneId: 'lane1' }],
+      transitions: [{ id: 'trans1',
+                      segments: [{ from: '1', to: 10 }, { from: 10, to: '2' }] }],
+    };
+    const action = {
+      type: PackageActions.FINISH_PACKAGE_LOAD_SUCCESS,
+      workflows: [
+        actionWorkflow1,
+        actionWorkflow2,
+      ],
+    };
+    const expectedWorkflow1 = {
+      lanes: [], activities: [], transitions: {}, id: '1', name: 'One' };
+    const expectedWorkflow2 = {
+      id: '2', name: 'Two',
+      lanes: [{ id: 'lane1', performers: ['perf1'] }],
+      activities: [{ id: 'act1', name: 'act1name', draggingDeltaX: 0,
+                     draggingDeltaY: 0, x: 5, relativeY: 10, laneId: 'lane1' }],
+      transitions: {
+        trans1: {
+          id: 'trans1',
+          segments: [{ from: '1', to: 10 }, { from: 10, to: '2' }],
+        },
+      },
+    };
+    expect(workflowReducer(List(), action).toJS(), 'to equal', [
+      expectedWorkflow1,
+      expectedWorkflow2,
+    ]);
   });
 
 });
