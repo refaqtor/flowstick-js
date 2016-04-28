@@ -109,7 +109,7 @@ export default function workflowsReducer(workflows, action) {
         relativeY,
         draggingDeltaX: 0,
         draggingDeltaY: 0,
-        x: oldAct.x + oldAct.draggingDeltaX,
+        x: Math.max(0, oldAct.x + oldAct.draggingDeltaX),
       })
     );
   }

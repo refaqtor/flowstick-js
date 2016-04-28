@@ -168,4 +168,19 @@ describe('Workflow Reducer', () => {
     ]);
   });
 
+  it('should not allow a x position of less than 0.', () => {
+    const workflows1 = List([
+      Workflow({ activities: List([Activity({ draggingDeltaX: -10, x: 10 })]) }),
+    ]);
+    const action = { type: WorkflowActions.STOP_MOVE_ACTIVITY };
+    const res1 = workflowReducer(workflows1, action).toJS();
+    expect(res1[0].activities[0].x, 'to be', 0);
+
+    const workflows2 = List([
+      Workflow({ activities: List([Activity({ draggingDeltaX: -11, x: 10 })]) }),
+    ]);
+    const res2 = workflowReducer(workflows2, action).toJS();
+    expect(res2[0].activities[0].x, 'to be', 0);
+  });
+
 });
