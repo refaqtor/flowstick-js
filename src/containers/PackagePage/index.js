@@ -8,7 +8,7 @@ import Helmet from 'react-helmet';
 import Package from '../../components/Package';
 import { dragActivity, stopDragActivity,
          focusObject } from '../../actions/workflow';
-import { loadPackage } from '../../actions/package';
+import { loadPackage, setCurrentWorkflow } from '../../actions/package';
 import { getLoading, getCurrentWorkflow, getWorkflows } from './selectors';
 
 const getFilename = props => props.params.packageFilename;
@@ -21,6 +21,7 @@ class PackagePage extends Component {
     dragActivity: PropTypes.func.isRequired,
     focusObject: PropTypes.func.isRequired,
     stopDragActivity: PropTypes.func.isRequired,
+    setCurrentWorkflow: PropTypes.func.isRequired,
     workflows: ImmutablePropTypes.list.isRequired,
     currentWorkflow: ImmutablePropTypes.record,
   }
@@ -48,7 +49,7 @@ class PackagePage extends Component {
   }
 
   render() {
-    const { loading, workflows, currentWorkflow,
+    const { loading, workflows, currentWorkflow, setCurrentWorkflow,
             focusObject, stopDragActivity, dragActivity } = this.props;
     const filename = getFilename(this.props);
     if (!filename) {
@@ -61,6 +62,7 @@ class PackagePage extends Component {
           filename={filename}
           loading={loading}
           workflows={workflows}
+          setCurrentWorkflow={setCurrentWorkflow}
           focusObject={focusObject}
           stopDragActivity={stopDragActivity}
           dragActivity={dragActivity}
@@ -70,16 +72,17 @@ class PackagePage extends Component {
   }
 }
 
-function mapStateToProps(state, ownProps) {
+function mapStateToProps(state) {
   return {
     loading: getLoading(state),
     workflows: getWorkflows(state),
-    currentWorkflow: getCurrentWorkflow(state, ownProps),
+    currentWorkflow: getCurrentWorkflow(state),
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
+    setCurrentWorkflow,
     loadPackage,
     dragActivity,
     stopDragActivity,

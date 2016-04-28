@@ -57,8 +57,8 @@ export default class Package extends Component {
     focusObject: PropTypes.func.isRequired,
     dragActivity: PropTypes.func.isRequired,
     stopDragActivity: PropTypes.func.isRequired,
+    setCurrentWorkflow: PropTypes.func.isRequired,
     workflows: ImmutablePropTypes.list.isRequired,
-    filename: PropTypes.string.isRequired,
     currentWorkflow: ImmutablePropTypes.record,
   }
 
@@ -71,7 +71,7 @@ export default class Package extends Component {
 
   render() {
     const { workflows, stopDragActivity, dragActivity, focusObject, loading,
-            currentWorkflow, filename } = this.props;
+            currentWorkflow, setCurrentWorkflow } = this.props;
     if (loading) {
       return (
         <div className="columns column vert-align">
@@ -84,9 +84,9 @@ export default class Package extends Component {
     return (
       <div className="columns column stretch-columns">
         <PackageNavigator
-          filename={filename}
           className="column"
           style={Package.naviagtorStyles}
+          onNavClick={setCurrentWorkflow}
           workflows={workflows}
           currentWorkflow={currentWorkflow} />
         <CurrentWorkflow

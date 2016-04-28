@@ -110,8 +110,6 @@ function getViewTransistions(process, activities) {
   );
 }
 
-const getCurrentWorkflowId = (state, props) => props.params.workflowId;
-
 export const getPackage = state => state.package;
 
 export const getLoading = createSelector(getPackage, pack => !pack.loaded);
@@ -123,11 +121,9 @@ export const getWorkflows = createSelector(
 
 export const getCurrentWorkflow = createSelector(
   getPackage,
-  getCurrentWorkflowId,
-  (pack, currentWorkflowId) => {
+  pack => {
     const workflows = pack.workflows;
-    const currentWf = currentWorkflowId && workflows
-      .find(wf => wf.id === currentWorkflowId);
+    const currentWf = workflows.find(wf => wf.current);
     if (!currentWf) { return undefined; }
     const lanes = getViewLanes(currentWf);
     const baseActivites = currentWf.activities;

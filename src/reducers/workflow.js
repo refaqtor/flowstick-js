@@ -9,6 +9,7 @@ export const Workflow = Record({
   lanes: List(),
   transitions: Map(),
   focusedObject: undefined,
+  current: false,
 });
 
 export const Activity = Record({
@@ -78,6 +79,15 @@ function updateActivity(workflows, workflowId, activityId, updater) {
 
 export default function workflowsReducer(workflows, action) {
   switch (action.type) {
+
+  case PackageActions.SET_CURRENT_WORKFLOW: {
+    const { workflowId } = action;
+    return workflows.map(wf => {
+      return wf.id === workflowId ?
+        wf.merge({ current: true }) :
+        wf.merge({ current: false });
+    });
+  }
 
   case WorkflowActions.FOCUS_OBJECT: {
     const { workflowId, object, objectType } = action;

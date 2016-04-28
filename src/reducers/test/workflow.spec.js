@@ -149,7 +149,8 @@ describe('Workflow Reducer', () => {
       ],
     };
     const expectedWorkflow1 = {
-      lanes: [], activities: [], transitions: {}, id: '1', name: 'One' };
+      lanes: [], activities: [], transitions: {},
+      id: '1', name: 'One', current: false };
     const expectedWorkflow2 = {
       id: '2', name: 'Two',
       lanes: [{ id: 'lane1', performers: ['perf1'] }],
@@ -161,6 +162,7 @@ describe('Workflow Reducer', () => {
           segments: [{ from: '1', to: 10 }, { from: 10, to: '2' }],
         },
       },
+      current: false,
     };
     expect(workflowReducer(List(), action).toJS(), 'to equal', [
       expectedWorkflow1,
@@ -181,6 +183,28 @@ describe('Workflow Reducer', () => {
     ]);
     const res2 = workflowReducer(workflows2, action).toJS();
     expect(res2[0].activities[0].x, 'to be', 0);
+  });
+
+  it('should keep track of current workflow state.', () => {
+    const workflows1 = List([
+      Workflow({ id: '0', current: false }),
+      Workflow({ id: '1', current: true }),
+    ]);
+    const action = {
+      type: PackageActions.SET_CURRENT_WORKFLOW,
+      workflowId: '0',
+    };
+    const res1 = workflowReducer(workflows1, action).toJS();
+    expect(res1[0].current, 'to be truthy');
+    expect(res1[1].current, 'to be falsy');
+
+    const workflows2 = List([
+      Workflow({ id: '0', current: false }),
+      Workflow({ id: '1', current: false }),
+    ]);
+    const res2 = workflowReducer(workflows2, action).toJS();
+    expect(res2[0].current, 'to be truthy');
+    expect(res2[1].current, 'to be falsy');
   });
 
 });
