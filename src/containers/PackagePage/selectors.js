@@ -116,13 +116,12 @@ export const getLoading = createSelector(getPackage, pack => !pack.loaded);
 
 export const getWorkflows = createSelector(
   getPackage,
-  pack => pack.workflows
+  pack => pack.workflows && pack.workflows.present || List()
 );
 
 export const getCurrentWorkflow = createSelector(
-  getPackage,
-  pack => {
-    const workflows = pack.workflows;
+  getWorkflows,
+  workflows => {
     const currentWf = workflows.find(wf => wf.current);
     if (!currentWf) { return undefined; }
     const lanes = getViewLanes(currentWf);

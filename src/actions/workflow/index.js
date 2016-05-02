@@ -1,8 +1,18 @@
 import { HALF_ACTIVITY_HEIGHT } from '../../components/Workflow/Activity';
 
+export const UNDO = 'wf_UNDO';
+export const REDO = 'wf_REDO';
 export const MOVE_ACTIVITY = 'wf_MOVE_ACTIVITY';
 export const STOP_MOVE_ACTIVITY = 'wf_STOP_MOVE_ACTIVITY';
 export const FOCUS_OBJECT = 'wf_FOCUS_OBJECT';
+
+export function redo() {
+  return { type: REDO };
+}
+
+export function undo() {
+  return { type: UNDO };
+}
 
 export function dragActivity(workflowId, activityId, deltaX, deltaY) {
   return {

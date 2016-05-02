@@ -10,6 +10,10 @@ export default class AppHeader extends Component {
   static propTypes = {
     openFileDialog: PropTypes.func.isRequired,
     fileDialogIsOpen: PropTypes.bool.isRequired,
+    undo: PropTypes.func.isRequired,
+    redo: PropTypes.func.isRequired,
+    undoAvailable: PropTypes.bool.isRequired,
+    redoAvailable: PropTypes.bool.isRequired,
   }
 
   constructor(props) {
@@ -18,9 +22,12 @@ export default class AppHeader extends Component {
   }
 
   render() {
-    const { openFileDialog, fileDialogIsOpen } = this.props;
+    const { openFileDialog, fileDialogIsOpen, undo, redo,
+            undoAvailable, redoAvailable } = this.props;
     const appButtons = List([
       { icon: 'folder open', onClick: openFileDialog, disabled: fileDialogIsOpen },
+      { icon: 'undo', onClick: undo, disabled: !undoAvailable },
+      { icon: 'redo', onClick: redo, disabled: !redoAvailable },
     ]);
     return (
       <AppBar className={styles.appBar}>

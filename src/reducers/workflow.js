@@ -1,4 +1,6 @@
+import undoable from 'redux-undo-immutable';
 import { Record, Map, List } from 'immutable';
+
 import * as WorkflowActions from '../actions/workflow';
 import * as PackageActions from '../actions/package';
 
@@ -77,7 +79,7 @@ function updateActivity(workflows, workflowId, activityId, updater) {
   );
 }
 
-export default function workflowsReducer(workflows, action) {
+export function workflowsReducer(workflows, action) {
   switch (action.type) {
 
   case PackageActions.SET_CURRENT_WORKFLOW: {
@@ -132,3 +134,12 @@ export default function workflowsReducer(workflows, action) {
 
   }
 }
+
+const INCLUDE_ACTIONS = [WorkflowActions.STOP_MOVE_ACTIVITY];
+const EXCLUDE_HISTORY = [WorkflowActions.MOVE_ACTIVITY];
+export default undoable(workflowsReducer, {
+  actionFilter: action => INCLUDE_ACTIONS.indexOf(action.type) > -1,
+  historyFilter: action => EXCLUDE_HISTORY.indexOf(action.type) === -1,
+  undoType: WorkflowActions.UNDO,
+  redoType: WorkflowActions.REDO,
+});

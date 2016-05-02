@@ -1,4 +1,4 @@
-import { Record, List } from 'immutable';
+import { Record } from 'immutable';
 
 import WorkflowsReducer from './workflow';
 import * as PackageActions from '../actions/package';
@@ -6,7 +6,7 @@ import * as PackageActions from '../actions/package';
 export const Package = Record({
   filename: undefined,
   loaded: false,
-  workflows: List(),
+  workflows: undefined,
 });
 
 function updateWorkflows(pack, action) {

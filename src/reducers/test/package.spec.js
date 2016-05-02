@@ -7,17 +7,11 @@ import packageReducer, { Package, __RewireAPI__ as rewire } from '../package';
 
 describe('Package Reducer', () => {
 
-  const halfLoadedPackage = Package({
-    filename: 'somefilename.xpdl',
-    loaded: false,
-    workflows: List(),
-  });
-
   it('should have a default state without any interesting propeties.', () => {
     expect(packageReducer(undefined, {}).toJS(), 'to equal', {
       filename: undefined,
       loaded: false,
-      workflows: [],
+      workflows: { past: [], future: [] },
     });
   });
 
@@ -25,7 +19,7 @@ describe('Package Reducer', () => {
     const statefulPackage = Package({
       filename: 'somefilename.xpdl',
       loaded: true,
-      workflows: List([{ any: 'Object' }]),
+      workflows: {},
     });
     const action = {
       type: PackageActions.START_PACKAGE_LOAD,
@@ -34,19 +28,22 @@ describe('Package Reducer', () => {
     expect(packageReducer(statefulPackage, action).toJS(), 'to equal', {
       filename: 'newfilename.xpdl',
       loaded: false,
-      workflows: [],
+      workflows: { past: [], future: [] },
     });
   });
 
   it('should handle workflow-less loads.', () => {
+    const halfLoadedPackage = Package({
+      filename: 'somefilename.xpdl',
+      loaded: false,
+    });
     const action = {
       type: PackageActions.FINISH_PACKAGE_LOAD_SUCCESS,
       workflows: [],
     };
-    expect(packageReducer(halfLoadedPackage, action).toJS(), 'to equal', {
+    expect(packageReducer(halfLoadedPackage, action).toJS(), 'to satisfy', {
       filename: 'somefilename.xpdl',
       loaded: true,
-      workflows: [],
     });
   });
 

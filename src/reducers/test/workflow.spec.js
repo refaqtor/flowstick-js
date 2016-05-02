@@ -2,7 +2,7 @@
 import { List } from 'immutable';
 import expect from 'unexpected';
 
-import workflowReducer, { Activity, Workflow } from '../workflow';
+import { workflowsReducer, Activity, Workflow } from '../workflow';
 import * as WorkflowActions from '../../actions/workflow';
 import * as PackageActions from '../../actions/package';
 
@@ -13,7 +13,7 @@ describe('Workflow Reducer', () => {
 
   it('should have a default state of whatever was passed in.', () => {
     const anyDefault = {};
-    expect(workflowReducer(anyDefault, {}), 'to be', anyDefault);
+    expect(workflowsReducer(anyDefault, {}), 'to be', anyDefault);
   });
 
   it('should, on move activity, compute the new state of dragginDeltas.', () => {
@@ -30,7 +30,7 @@ describe('Workflow Reducer', () => {
       type: WorkflowActions.MOVE_ACTIVITY,
       deltaX: 10, deltaY: -50, activityId: '1', workflowId: '4',
     };
-    const firstResultWfs = workflowReducer(originalWorkflows, firstAction);
+    const firstResultWfs = workflowsReducer(originalWorkflows, firstAction);
     const firstResult = firstResultWfs.get(0);
     const firstChangedAct = firstResult.activities.get(1);
     expect(firstResultWfs.size, 'to be', 2);
@@ -46,7 +46,7 @@ describe('Workflow Reducer', () => {
       type: WorkflowActions.MOVE_ACTIVITY,
       deltaX: -10, deltaY: -250, activityId: '1', workflowId: '4',
     };
-    const secondResultWfs = workflowReducer(firstResultWfs, secondAction);
+    const secondResultWfs = workflowsReducer(firstResultWfs, secondAction);
     const secondResult = secondResultWfs.get(0);
     const secondChangedAct = secondResult.activities.get(1);
     expect(secondResultWfs.size, 'to be', 2);
@@ -73,7 +73,7 @@ describe('Workflow Reducer', () => {
       type: WorkflowActions.STOP_MOVE_ACTIVITY,
       laneId: 'newLaneId', relativeY: 24, activityId: '1', workflowId: '2',
     };
-    const firstResultWfs = workflowReducer(originalWorkflows, firstAction);
+    const firstResultWfs = workflowsReducer(originalWorkflows, firstAction);
     const firstResult = firstResultWfs.get(1);
     const firstChangedAct = firstResult.activities.get(1);
     expect(firstResultWfs.size, 'to be', 2);
@@ -91,7 +91,7 @@ describe('Workflow Reducer', () => {
       type: WorkflowActions.STOP_MOVE_ACTIVITY,
       laneId: 'lastlane', relativeY: 0, activityId: '1', workflowId: '2',
     };
-    const secondResultWfs = workflowReducer(firstResultWfs, secondAction);
+    const secondResultWfs = workflowsReducer(firstResultWfs, secondAction);
     const secondResult = secondResultWfs.get(1);
     const secondChangedAct = secondResult.activities.get(1);
     expect(secondResultWfs.size, 'to be', 2);
@@ -115,7 +115,7 @@ describe('Workflow Reducer', () => {
       objectType: 'anytype',
       workflowId: '1',
     };
-    const res = workflowReducer(original, action);
+    const res = workflowsReducer(original, action);
     const changedWorkflow = res.get(0);
     const stateFocused = changedWorkflow.focusedObject;
     expect(res.size, 'to be', 2);
@@ -164,7 +164,7 @@ describe('Workflow Reducer', () => {
       },
       current: false,
     };
-    expect(workflowReducer(List(), action).toJS(), 'to equal', [
+    expect(workflowsReducer(List(), action).toJS(), 'to equal', [
       expectedWorkflow1,
       expectedWorkflow2,
     ]);
@@ -175,13 +175,13 @@ describe('Workflow Reducer', () => {
       Workflow({ activities: List([Activity({ draggingDeltaX: -10, x: 10 })]) }),
     ]);
     const action = { type: WorkflowActions.STOP_MOVE_ACTIVITY };
-    const res1 = workflowReducer(workflows1, action).toJS();
+    const res1 = workflowsReducer(workflows1, action).toJS();
     expect(res1[0].activities[0].x, 'to be', 0);
 
     const workflows2 = List([
       Workflow({ activities: List([Activity({ draggingDeltaX: -11, x: 10 })]) }),
     ]);
-    const res2 = workflowReducer(workflows2, action).toJS();
+    const res2 = workflowsReducer(workflows2, action).toJS();
     expect(res2[0].activities[0].x, 'to be', 0);
   });
 
@@ -194,7 +194,7 @@ describe('Workflow Reducer', () => {
       type: PackageActions.SET_CURRENT_WORKFLOW,
       workflowId: '0',
     };
-    const res1 = workflowReducer(workflows1, action).toJS();
+    const res1 = workflowsReducer(workflows1, action).toJS();
     expect(res1[0].current, 'to be truthy');
     expect(res1[1].current, 'to be falsy');
 
@@ -202,7 +202,7 @@ describe('Workflow Reducer', () => {
       Workflow({ id: '0', current: false }),
       Workflow({ id: '1', current: false }),
     ]);
-    const res2 = workflowReducer(workflows2, action).toJS();
+    const res2 = workflowsReducer(workflows2, action).toJS();
     expect(res2[0].current, 'to be truthy');
     expect(res2[1].current, 'to be falsy');
   });
