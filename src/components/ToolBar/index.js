@@ -31,7 +31,7 @@ export default class ToolBar extends Component {
       <ul className={ToolBar.listClassNames}>
         {buttons.map((button, index) =>
           <li key={index}
-            className={classnames('material-icons', {
+            className={classnames('material-icons column', {
               [styles.buttonDisabled]: button.disabled,
             })}
             onClick={this.onClick.bind(this, index)}>
