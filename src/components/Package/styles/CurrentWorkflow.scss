@@ -2,4 +2,7 @@
 
 .main {
   margin-top: 2 * $fs-spacing-unit;
+  > div {
+    z-index: $fs-zindex-wf-scrollbars;
+  }
 }

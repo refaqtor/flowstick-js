@@ -1,12 +1,11 @@
 import React, { Component, PropTypes } from 'react';
+import { Scrollbars } from 'react-custom-scrollbars';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import ImmutablePropTypes from 'react-immutable-proptypes';
-import classnames from 'classnames';
 
 import { Transitions } from './Transition';
 import { Lanes } from './Lane';
 import { Activities } from './Activity';
-import styles from './styles/Workflow';
 
 export default class Workflow extends Component {
   static propTypes = {
@@ -31,7 +30,7 @@ export default class Workflow extends Component {
             dragActivity, stopDragActivity, focusedObject,
             focusObject, className } = this.props;
     return (
-      <section className={classnames(className, styles.process)}>
+      <Scrollbars className={className} style={{ height: 'auto' }}>
         <Lanes lanes={lanes} width={lanesWidth} />
         <Activities activities={activities}
           focusActivity={focusObject.bind(undefined, 'activity')}
@@ -39,7 +38,7 @@ export default class Workflow extends Component {
           stopDragActivity={stopDragActivity}
           focusedObject={focusedObject} />
         <Transitions transitions={transitions} />
-      </section>
+      </Scrollbars>
     );
   }
 }
