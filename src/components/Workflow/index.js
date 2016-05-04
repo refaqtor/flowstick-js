@@ -30,7 +30,8 @@ export default class Workflow extends Component {
             dragActivity, stopDragActivity, focusedObject,
             focusObject, className } = this.props;
     return (
-      <Scrollbars className={className} style={{ height: 'auto' }}>
+      <Scrollbars className={className} style={{ height: 'auto' }}
+        invertWheelDirection>
         <Lanes lanes={lanes} width={lanesWidth} />
         <Activities activities={activities}
           focusActivity={focusObject.bind(undefined, 'activity')}
