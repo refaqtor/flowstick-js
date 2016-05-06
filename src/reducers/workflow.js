@@ -142,4 +142,5 @@ export default undoable(workflowsReducer, {
   historyFilter: action => EXCLUDE_HISTORY.indexOf(action.type) === -1,
   undoType: WorkflowActions.UNDO,
   redoType: WorkflowActions.REDO,
+  limit: 1000,
 });
