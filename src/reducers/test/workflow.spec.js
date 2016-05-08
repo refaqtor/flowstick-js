@@ -208,6 +208,17 @@ describe('Workflow Reducer', () => {
     });
   });
 
+  it('should work even when there is no matching activity.', () => {
+    const wf = Workflow({
+      id: '1',
+      activities: List([unchangedAct]),
+    });
+    const orig = List([wf]);
+    const action = { type: WorkflowActions.MOVE_ACTIVITY };
+    const res = workflowsReducer(orig, action);
+    expect(res, 'to be', orig);
+  });
+
   it('should, on package finish, load in all the processed xpdl.', () => {
     const actionWorkflow1 = {
       id: '1',
