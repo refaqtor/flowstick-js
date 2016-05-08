@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import classnames from 'classnames';
+import { DraggableCore } from 'react-draggable';
 
 import styles from './styles/Transition';
 import { HALF_ACTIVITY_HEIGHT, HALF_ACTIVITY_WIDTH } from './Activity';
@@ -52,7 +53,15 @@ export class Segment extends Component {
     return (
       <div className={styles.transitionWrap} style={inlineStyles}
         onClick={onClick}>
-        <div className={styles.transition} />
+        <div>
+          <DraggableCore>
+            <div className={styles.handle} />
+          </DraggableCore>
+          <div className={styles.transition} />
+          <DraggableCore>
+            <div className={styles.handle} />
+          </DraggableCore>
+        </div>
       </div>
     );
   }

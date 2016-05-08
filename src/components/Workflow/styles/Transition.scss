@@ -4,6 +4,12 @@ $wrap-size: 10px;
 .transitionWrap {
   z-index: $fs-zindex-transition;
   position: absolute;
+  .focused & {
+    z-index: $fs-zindex-focused;
+  }
+  > div {
+    position: relative;
+  }
 }
 
 .transition {
@@ -16,6 +22,7 @@ $wrap-size: 10px;
   margin-top: $wrap-size / 2 - $transition-size / 2;
   position: relative;
   &::after {
+    transition: background $fs-ani-medium, opacity $fs-ani-medium;
     font-family: 'Material Icons';
     position: absolute;
     top: 50%;
@@ -29,5 +36,36 @@ $wrap-size: 10px;
   }
   .focused & {
     background-color: $fs-clr-accent-secondary;
+  }
+  .focused &::after {
+    opacity: 0;
+  }
+}
+
+.handle {
+  $drag-size: 12px;
+  transition: visibility 0s linear 0.2s, opacity $fs-ani-medium;
+  background-color: $fs-clr-accent-secondary;
+  visibility: hidden;
+  opacity: 0;
+  width: $drag-size;
+  height: $drag-size;
+  cursor: move;
+  position: absolute;
+  top: 50%;
+  margin-top: -($drag-size / 2);
+  left: 0;
+  .focused & {
+    visibility: visible;
+    opacity: 1;
+    transition-delay: 0s;
+  }
+  &:last-child {
+    display: none;
+    right: 0;
+    left: auto;
+  }
+  .focused > div:first-child &:last-child {
+    display: block;
   }
 }
