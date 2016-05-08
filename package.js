@@ -18,10 +18,12 @@ const DEFAULT_OPTS = {
   dir: './',
   name: appName,
   asar: shouldUseAsar,
+  icon: 'icon',
   ignore: [
-    '/test($|/)',
-    '/tools($|/)',
-    '/release($|/)',
+    '^/test($|/)',
+    '^/tools($|/)',
+    '^/release($|/)',
+    '^/interfaces($|/)',
   ].concat(devDeps.map(name => `/node_modules/${name}($|/)`)),
 };
 
@@ -77,8 +79,19 @@ function pack(plat, arch, cb) {
     // There is no darwin ia32 electron.
     return;
   }
+  const iconObj = {
+    icon: DEFAULT_OPTS.icon + (() => {
+      let extension = '.png';
+      if (plat === 'darwin') {
+        extension = '.icns';
+      } else if (plat === 'win32') {
+        extension = '.ico';
+      }
+      return extension;
+    })(),
+  };
 
-  const opts = Object.assign({}, DEFAULT_OPTS, {
+  const opts = Object.assign({}, DEFAULT_OPTS, iconObj, {
     platform: plat,
     arch,
     prune: true,
