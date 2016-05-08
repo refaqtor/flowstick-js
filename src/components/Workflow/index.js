@@ -15,8 +15,8 @@ export default class Workflow extends Component {
     transitions: ImmutablePropTypes.map.isRequired,
     activities: ImmutablePropTypes.list.isRequired,
     lanes: ImmutablePropTypes.list.isRequired,
-    focusedObject: ImmutablePropTypes.record,
     focusObject: PropTypes.func.isRequired,
+    unfocusAllObjects: PropTypes.func.isRequired,
     className: PropTypes.string,
   }
 
@@ -27,18 +27,19 @@ export default class Workflow extends Component {
 
   render() {
     const { lanes, lanesWidth, activities, transitions,
-            dragActivity, stopDragActivity, focusedObject,
-            focusObject, className } = this.props;
+            dragActivity, stopDragActivity, focusObject, className,
+            unfocusAllObjects } = this.props;
     return (
       <Scrollbars className={className} style={{ height: 'auto' }}
-        invertWheelDirection>
+        invertWheelDirection
+        onClick={unfocusAllObjects}>
         <Lanes lanes={lanes} width={lanesWidth} />
         <Activities activities={activities}
           focusActivity={focusObject.bind(undefined, 'activity')}
           dragActivity={dragActivity}
-          stopDragActivity={stopDragActivity}
-          focusedObject={focusedObject} />
-        <Transitions transitions={transitions} />
+          stopDragActivity={stopDragActivity} />
+        <Transitions transitions={transitions}
+          focusTransition={focusObject.bind(undefined, 'transition')} />
       </Scrollbars>
     );
   }

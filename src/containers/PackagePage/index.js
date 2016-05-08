@@ -7,7 +7,7 @@ import Helmet from 'react-helmet';
 
 import Package from '../../components/Package';
 import { dragActivity, stopDragActivity,
-         focusObject } from '../../actions/workflow';
+         focusObject, unfocusAllObjects } from '../../actions/workflow';
 import { loadPackage, setCurrentWorkflow } from '../../actions/package';
 import { getLoading, getCurrentWorkflow, getWorkflows } from './selectors';
 
@@ -20,6 +20,7 @@ class PackagePage extends Component {
     loadPackage: PropTypes.func.isRequired,
     dragActivity: PropTypes.func.isRequired,
     focusObject: PropTypes.func.isRequired,
+    unfocusAllObjects: PropTypes.func.isRequired,
     stopDragActivity: PropTypes.func.isRequired,
     setCurrentWorkflow: PropTypes.func.isRequired,
     workflows: ImmutablePropTypes.list.isRequired,
@@ -50,7 +51,8 @@ class PackagePage extends Component {
 
   render() {
     const { loading, workflows, currentWorkflow, setCurrentWorkflow,
-            focusObject, stopDragActivity, dragActivity } = this.props;
+            focusObject, stopDragActivity, dragActivity,
+            unfocusAllObjects } = this.props;
     const filename = getFilename(this.props);
     if (!filename) {
       return <h1>Nothing to see...</h1>;
@@ -64,6 +66,7 @@ class PackagePage extends Component {
           workflows={workflows}
           setCurrentWorkflow={setCurrentWorkflow}
           focusObject={focusObject}
+          unfocusAllObjects={unfocusAllObjects}
           stopDragActivity={stopDragActivity}
           dragActivity={dragActivity}
           currentWorkflow={currentWorkflow} />
@@ -87,6 +90,7 @@ function mapDispatchToProps(dispatch) {
     dragActivity,
     stopDragActivity,
     focusObject,
+    unfocusAllObjects,
   }, dispatch);
 }
 

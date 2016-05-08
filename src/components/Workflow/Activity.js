@@ -17,7 +17,6 @@ export class Activities extends Component {
     dragActivity: PropTypes.func.isRequired,
     focusActivity: PropTypes.func.isRequired,
     stopDragActivity: PropTypes.func.isRequired,
-    focusedObject: ImmutablePropTypes.record,
   };
 
   constructor(props) {
@@ -27,12 +26,12 @@ export class Activities extends Component {
 
   render() {
     const { activities, dragActivity, stopDragActivity,
-            focusedObject, focusActivity } = this.props;
+            focusActivity } = this.props;
     return (
       <div>
         {activities.map(act =>
           <Activity key={act.id} id={act.id}
-            focused={focusedObject === act}
+            focused={act.focused}
             displayName={act.name} x={act.x} y={act.y}
             onDrag={dragActivity}
             onDragStart={focusActivity.bind(undefined, act)}
@@ -74,6 +73,10 @@ export class Activity extends Component {
     onDrag(id, deltaX, deltaY);
   }
 
+  handleClick(evt) {
+    evt.stopPropagation();
+  }
+
   render() {
     const { x, y, focused } = this.props;
     let { displayName } = this.props;
@@ -86,6 +89,7 @@ export class Activity extends Component {
         onDrag={this.onDrag.bind(this)}
         onStop={this.onDragStop.bind(this)}>
         <div
+          onClick={this.handleClick}
           className={classnames(styles.activity, { [styles.focused]: focused })}
           style={{
             top: y, left: x,

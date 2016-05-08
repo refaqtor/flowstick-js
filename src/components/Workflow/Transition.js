@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import ImmutablePropTypes from 'react-immutable-proptypes';
+import classnames from 'classnames';
 
 import styles from './styles/Transition';
 import { HALF_ACTIVITY_HEIGHT, HALF_ACTIVITY_WIDTH } from './Activity';
@@ -17,6 +18,7 @@ export class Segment extends Component {
   static propTypes = {
     from: POINT,
     to: POINT,
+    onClick: PropTypes.func.isRequired,
   }
 
   constructor(props) {
@@ -44,11 +46,12 @@ export class Segment extends Component {
   }
 
   render() {
-    const { from, to } = this.props;
+    const { from, to, onClick } = this.props;
     if (!to || !from) { return null; }
     const inlineStyles = this.styles(from, to);
     return (
-      <div className={styles.transitionWrap} style={inlineStyles}>
+      <div className={styles.transitionWrap} style={inlineStyles}
+        onClick={onClick}>
         <div className={styles.transition} />
       </div>
     );
@@ -58,6 +61,7 @@ export class Segment extends Component {
 export class Transition extends Component {
   static propTypes = {
     transition: ImmutablePropTypes.record.isRequired,
+    onClick: PropTypes.func.isRequired,
   }
 
   constructor(props) {
@@ -123,14 +127,22 @@ export class Transition extends Component {
     return { from, to };
   }
 
+  segmentClick(evt) {
+    const { onClick, transition } = this.props;
+    onClick(transition);
+    evt.stopPropagation();
+  }
+
   render() {
     const { transition } = this.props;
-    const { segments } = transition;
+    const { segments, focused } = transition;
+    const onSegClick = this.segmentClick.bind(this);
     return (
-      <div>
+      <div className={classnames({ [styles.focused]: focused })}>
         {segments.map((seg, index) =>
           <Segment
             key={index}
+            onClick={onSegClick}
             {...this.computePoints(seg)} />)}
       </div>
     );
@@ -140,6 +152,7 @@ export class Transition extends Component {
 export class Transitions extends Component {
   static propTypes = {
     transitions: ImmutablePropTypes.map.isRequired,
+    focusTransition: PropTypes.func.isRequired,
   }
 
   constructor(props) {
@@ -148,12 +161,13 @@ export class Transitions extends Component {
   }
 
   render() {
-    const { transitions } = this.props;
+    const { transitions, focusTransition } = this.props;
     return (
       <div>
         {transitions.map(transition =>
           <Transition
             key={transition.id}
+            onClick={focusTransition}
             transition={transition} />).toList()}
       </div>
     );

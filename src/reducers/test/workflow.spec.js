@@ -1,8 +1,8 @@
 /* eslint-env mocha */
-import { List } from 'immutable';
+import { Map, List } from 'immutable';
 import expect from 'unexpected';
 
-import { workflowsReducer, Activity, Workflow } from '../workflow';
+import { workflowsReducer, Activity, Workflow, Transition } from '../workflow';
 import * as WorkflowActions from '../../actions/workflow';
 import * as PackageActions from '../../actions/package';
 
@@ -106,22 +106,106 @@ describe('Workflow Reducer', () => {
     expect(secondChangedAct.x, 'to be', 90);
   });
 
-  it('should ammend the workflow with a focused object.', () => {
-    const original = List([Workflow({ id: '1' }), Workflow({ id: '2' })]);
-    const newFocusObj = {};
+  it('should update a transition as focused.', () => {
+    const wf1 = Workflow({ id: '1' });
+    const wf2 = Workflow({
+      id: '2',
+      transitions: Map({
+        '1': Transition({
+          id: '1',
+          focused: false,
+        }),
+        '2': Transition({
+          id: '2',
+          focused: true,
+        }),
+      }),
+    });
+    const original = List([wf1, wf2]);
     const action = {
       type: WorkflowActions.FOCUS_OBJECT,
-      object: newFocusObj,
-      objectType: 'anytype',
+      object: wf2.transitions.get('1'),
+      objectType: 'transition',
+      workflowId: '2',
+    };
+    const res = workflowsReducer(original, action);
+    const changedWorkflow = res.get(1);
+    expect(res.size, 'to be', 2);
+    expect(res.get(0), 'to be', original.get(0));
+    expect(changedWorkflow.transitions.get('1').toJS(), 'to satisfy', {
+      id: '1', focused: true,
+    });
+    expect(changedWorkflow.transitions.get('2').toJS(), 'to satisfy', {
+      id: '2', focused: false,
+    });
+  });
+
+  it('should update a activity as focused.', () => {
+    const wf1 = Workflow({ id: '1' });
+    const wf2 = Workflow({
+      id: '2',
+      activities: List([
+        unchangedAct,
+        Activity({ id: '1' }),
+      ]),
+    });
+    const original = List([wf1, wf2]);
+    const action = {
+      type: WorkflowActions.FOCUS_OBJECT,
+      object: wf2.activities.get(1),
+      objectType: 'activity',
+      workflowId: '2',
+    };
+    const res = workflowsReducer(original, action);
+    const changedWorkflow = res.get(1);
+    expect(res.size, 'to be', 2);
+    expect(res.get(0), 'to be', original.get(0));
+    expect(changedWorkflow.activities.get(0), 'to be', unchangedAct);
+    expect(changedWorkflow.activities.get(1).toJS(), 'to satisfy', {
+      id: '1', focused: true,
+    });
+  });
+
+  it('should not crash on focus unknown object.', () => {
+    const wf = Workflow({ id: '1' });
+    const original = List([wf]);
+    const action = {
+      type: WorkflowActions.FOCUS_OBJECT,
+      objectType: 'UNKNOWN',
       workflowId: '1',
     };
     const res = workflowsReducer(original, action);
-    const changedWorkflow = res.get(0);
-    const stateFocused = changedWorkflow.focusedObject;
-    expect(res.size, 'to be', 2);
-    expect(res.get(1), 'to be', original.get(1));
-    expect(stateFocused.type, 'to be', 'anytype');
-    expect(stateFocused.object, 'to be', newFocusObj);
+    expect(res, 'to be', original);
+  });
+
+  it('should unfocus all objects.', () => {
+    const wf = Workflow({
+      id: '1',
+      activities: List([
+        unchangedAct,
+        Activity({ id: '1', focused: true }),
+      ]),
+      transitions: Map({
+        '1': Transition({ id: '1', focused: true }),
+        '2': Transition({ id: '2', focused: true }),
+      }),
+    });
+    const original = List([wf]);
+    const action = {
+      type: WorkflowActions.UNFOCUS_ALL,
+      workflowId: '1',
+    };
+    const res = workflowsReducer(original, action);
+    expect(res.size, 'to be', 1);
+    const newWf = res.get(0);
+    expect(newWf.toJS(), 'to satisfy', {
+      id: '1',
+      activities: [{ id: '2', focused: false }, { id: '1', focused: false }],
+      transitions: {
+        '1': { id: '1', focused: false },
+        '2': { id: '2', focused: false },
+      },
+    });
   });
 
   it('should, on package finish, load in all the processed xpdl.', () => {
@@ -154,11 +238,12 @@ describe('Workflow Reducer', () => {
     const expectedWorkflow2 = {
       id: '2', name: 'Two',
       lanes: [{ id: 'lane1', performers: ['perf1'] }],
-      activities: [{ id: 'act1', name: 'act1name', draggingDeltaX: 0,
+      activities: [{ id: 'act1', name: 'act1name', draggingDeltaX: 0, focused: false,
                      draggingDeltaY: 0, x: 5, relativeY: 10, laneId: 'lane1' }],
       transitions: {
         trans1: {
           id: 'trans1',
+          focused: false,
           segments: [{ from: '1', to: 10 }, { from: 10, to: '2' }],
         },
       },

@@ -22,6 +22,7 @@ const ViewActivity = Record({
   id: undefined,
   name: undefined,
   laneId: undefined,
+  focused: false,
   x: 0,
   y: 0,
 });
@@ -39,7 +40,6 @@ const CurrentWorkflow = Record({
   lanes: List(),
   activities: List(),
   transitions: Map(),
-  focusedObject: undefined,
 });
 
 function getActivityBottom(activity) {
@@ -85,6 +85,7 @@ function getViewActivities(activities, lanes) {
       laneId: act.laneId,
       x: act.x + act.draggingDeltaX,
       y: act.relativeY + act.draggingDeltaY + laneOffsets.get(act.laneId, 0),
+      focused: act.focused,
     })
   );
 }
@@ -132,14 +133,8 @@ export const getCurrentWorkflow = createSelector(
       baseActivites.map(getActivityRight).max() + WIDTH_LANE_BUFFER,
       MIN_LANE_WIDTH
     );
-    let { focusedObject } = currentWf;
-    if (focusedObject && focusedObject.type === 'activity') {
-      const focusId = focusedObject.object.id;
-      focusedObject = activities.find(act => act.id === focusId);
-    }
     return CurrentWorkflow({
       id: currentWf.id,
-      focusedObject,
       lanes,
       lanesWidth,
       activities,

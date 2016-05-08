@@ -11,6 +11,7 @@ import wfStyles from './styles/CurrentWorkflow';
 class CurrentWorkflow extends Component {
   static propTypes = {
     currentWorkflow: ImmutablePropTypes.record,
+    unfocusAllObjects: PropTypes.func.isRequired,
     focusObject: PropTypes.func.isRequired,
     dragActivity: PropTypes.func.isRequired,
     stopDragActivity: PropTypes.func.isRequired,
@@ -30,21 +31,21 @@ class CurrentWorkflow extends Component {
   }
 
   render() {
-    const { currentWorkflow, dragActivity, focusObject } = this.props;
+    const { currentWorkflow, dragActivity, focusObject,
+            unfocusAllObjects } = this.props;
     if (!currentWorkflow) {
       return null;
     }
-    const { lanes, lanesWidth, activities, transitions,
-            focusedObject } = currentWorkflow;
+    const { lanes, lanesWidth, activities, transitions, id } = currentWorkflow;
     return (
       <Workflow className={CurrentWorkflow.classNames}
         lanes={lanes}
         lanesWidth={lanesWidth}
         activities={activities}
         transitions={transitions}
-        dragActivity={dragActivity.bind(undefined, currentWorkflow.id)}
-        focusObject={focusObject.bind(undefined, currentWorkflow.id)}
-        focusedObject={focusedObject}
+        unfocusAllObjects={unfocusAllObjects.bind(undefined, id)}
+        dragActivity={dragActivity.bind(undefined, id)}
+        focusObject={focusObject.bind(undefined, id)}
         stopDragActivity={this.stopDragActivity.bind(this)} />
     );
   }
@@ -55,6 +56,7 @@ export default class Package extends Component {
     loading: PropTypes.bool.isRequired,
     currentWorkflowId: PropTypes.string,
     focusObject: PropTypes.func.isRequired,
+    unfocusAllObjects: PropTypes.func.isRequired,
     dragActivity: PropTypes.func.isRequired,
     stopDragActivity: PropTypes.func.isRequired,
     setCurrentWorkflow: PropTypes.func.isRequired,
@@ -71,7 +73,7 @@ export default class Package extends Component {
 
   render() {
     const { workflows, stopDragActivity, dragActivity, focusObject, loading,
-            currentWorkflow, setCurrentWorkflow } = this.props;
+            currentWorkflow, setCurrentWorkflow, unfocusAllObjects } = this.props;
     if (loading) {
       return (
         <div className="columns column vert-align">
@@ -90,6 +92,7 @@ export default class Package extends Component {
           workflows={workflows}
           currentWorkflow={currentWorkflow} />
         <CurrentWorkflow
+          unfocusAllObjects={unfocusAllObjects}
           stopDragActivity={stopDragActivity}
           dragActivity={dragActivity}
           focusObject={focusObject}

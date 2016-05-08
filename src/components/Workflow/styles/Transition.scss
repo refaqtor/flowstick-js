@@ -27,4 +27,7 @@ $wrap-size: 10px;
     font-size: $arrow-size;
     font-weight: bold;
   }
+  .focused & {
+    background-color: $fs-clr-accent-secondary;
+  }
 }

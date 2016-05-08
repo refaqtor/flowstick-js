@@ -5,6 +5,7 @@ export const REDO = 'wf_REDO';
 export const MOVE_ACTIVITY = 'wf_MOVE_ACTIVITY';
 export const STOP_MOVE_ACTIVITY = 'wf_STOP_MOVE_ACTIVITY';
 export const FOCUS_OBJECT = 'wf_FOCUS_OBJECT';
+export const UNFOCUS_ALL = 'wf_UNFOCUS_ALL_OBJECTS';
 
 export function redo() {
   return { type: REDO };
@@ -34,6 +35,13 @@ export function stopDragActivity(workflowId, activityId, activityY, lanes) {
     laneId: lane.id,
     relativeY: Math.max(activityY - lane.y, 0),
     activityId,
+    workflowId,
+  };
+}
+
+export function unfocusAllObjects(workflowId) {
+  return {
+    type: UNFOCUS_ALL,
     workflowId,
   };
 }

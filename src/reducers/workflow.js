@@ -10,7 +10,6 @@ export const Workflow = Record({
   activities: List(),
   lanes: List(),
   transitions: Map(),
-  focusedObject: undefined,
   current: false,
 });
 
@@ -18,15 +17,11 @@ export const Activity = Record({
   id: undefined,
   name: undefined,
   laneId: undefined,
+  focused: false,
   x: 0,
   relativeY: 0,
   draggingDeltaY: 0,
   draggingDeltaX: 0,
-});
-
-const FocusObject = Record({
-  object: undefined,
-  type: undefined,
 });
 
 const Lane = Record({
@@ -39,9 +34,10 @@ const Segment = Record({
   from: undefined,
 });
 
-const Transition = Record({
+export const Transition = Record({
   id: undefined,
   segments: List(),
+  focused: false,
 });
 
 function constructWorkflowsState(actionWorkflows) {
@@ -79,6 +75,17 @@ function updateActivity(workflows, workflowId, activityId, updater) {
   );
 }
 
+const STATE_FOCUS_LOOKUP = { transition: 'transitions', activity: 'activities' };
+
+function unfocusAll(workflows, workflowId) {
+  return updateThings(workflows, workflowId, oldWf =>
+    oldWf.merge({
+      transitions: oldWf.transitions.map(tran => tran.set('focused', false)),
+      activities: oldWf.activities.map(act => act.set('focused', false)),
+    })
+  );
+}
+
 export function workflowsReducer(workflows, action) {
   switch (action.type) {
 
@@ -91,13 +98,20 @@ export function workflowsReducer(workflows, action) {
     });
   }
 
+  case WorkflowActions.UNFOCUS_ALL:
+    return unfocusAll(workflows, action.workflowId);
+
   case WorkflowActions.FOCUS_OBJECT: {
     const { workflowId, object, objectType } = action;
-    return updateThings(workflows, workflowId, oldWf =>
+    const typething = STATE_FOCUS_LOOKUP[objectType];
+    if (!typething) { return workflows; }
+    const unfocused = unfocusAll(workflows, workflowId);
+    return updateThings(unfocused, workflowId, oldWf =>
       oldWf.merge({
-        focusedObject: FocusObject({
-          type: objectType,
-          object,
+        [typething]: oldWf[typething].map(oldthing => {
+          return oldthing.id === object.id ?
+            oldthing.set('focused', true) :
+            oldthing;
         }),
       })
     );
