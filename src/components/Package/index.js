@@ -13,6 +13,8 @@ class CurrentWorkflow extends Component {
     currentWorkflow: ImmutablePropTypes.record,
     unfocusAllObjects: PropTypes.func.isRequired,
     focusObject: PropTypes.func.isRequired,
+    dragTransitionMarker: PropTypes.func.isRequired,
+    stopDragTransitionMarker: PropTypes.func.isRequired,
     dragActivity: PropTypes.func.isRequired,
     stopDragActivity: PropTypes.func.isRequired,
   }
@@ -31,8 +33,8 @@ class CurrentWorkflow extends Component {
   }
 
   render() {
-    const { currentWorkflow, dragActivity, focusObject,
-            unfocusAllObjects } = this.props;
+    const { currentWorkflow, dragActivity, focusObject, stopDragTransitionMarker,
+            unfocusAllObjects, dragTransitionMarker } = this.props;
     if (!currentWorkflow) {
       return null;
     }
@@ -45,6 +47,9 @@ class CurrentWorkflow extends Component {
         transitions={transitions}
         unfocusAllObjects={unfocusAllObjects.bind(undefined, id)}
         dragActivity={dragActivity.bind(undefined, id)}
+        dragTransitionMarker={dragTransitionMarker.bind(undefined, currentWorkflow)}
+        stopDragTransitionMarker={
+          stopDragTransitionMarker.bind(undefined, currentWorkflow)}
         focusObject={focusObject.bind(undefined, id)}
         stopDragActivity={this.stopDragActivity.bind(this)} />
     );
@@ -57,6 +62,8 @@ export default class Package extends Component {
     currentWorkflowId: PropTypes.string,
     focusObject: PropTypes.func.isRequired,
     unfocusAllObjects: PropTypes.func.isRequired,
+    dragTransitionMarker: PropTypes.func.isRequired,
+    stopDragTransitionMarker: PropTypes.func.isRequired,
     dragActivity: PropTypes.func.isRequired,
     stopDragActivity: PropTypes.func.isRequired,
     setCurrentWorkflow: PropTypes.func.isRequired,
@@ -73,7 +80,8 @@ export default class Package extends Component {
 
   render() {
     const { workflows, stopDragActivity, dragActivity, focusObject, loading,
-            currentWorkflow, setCurrentWorkflow, unfocusAllObjects } = this.props;
+            currentWorkflow, setCurrentWorkflow, unfocusAllObjects,
+            dragTransitionMarker, stopDragTransitionMarker } = this.props;
     if (loading) {
       return (
         <div className="columns column vert-align">
@@ -95,6 +103,8 @@ export default class Package extends Component {
           unfocusAllObjects={unfocusAllObjects}
           stopDragActivity={stopDragActivity}
           dragActivity={dragActivity}
+          dragTransitionMarker={dragTransitionMarker}
+          stopDragTransitionMarker={stopDragTransitionMarker}
           focusObject={focusObject}
           currentWorkflow={currentWorkflow} />
       </div>

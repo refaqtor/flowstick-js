@@ -9,6 +9,8 @@ import { Activities } from './Activity';
 
 export default class Workflow extends Component {
   static propTypes = {
+    dragTransitionMarker: PropTypes.func.isRequired,
+    stopDragTransitionMarker: PropTypes.func.isRequired,
     dragActivity: PropTypes.func.isRequired,
     stopDragActivity: PropTypes.func.isRequired,
     lanesWidth: PropTypes.number.isRequired,
@@ -26,9 +28,9 @@ export default class Workflow extends Component {
   }
 
   render() {
-    const { lanes, lanesWidth, activities, transitions,
+    const { lanes, lanesWidth, activities, transitions, stopDragTransitionMarker,
             dragActivity, stopDragActivity, focusObject, className,
-            unfocusAllObjects } = this.props;
+            unfocusAllObjects, dragTransitionMarker } = this.props;
     return (
       <Scrollbars className={className} style={{ height: 'auto' }}
         invertWheelDirection
@@ -39,7 +41,9 @@ export default class Workflow extends Component {
           dragActivity={dragActivity}
           stopDragActivity={stopDragActivity} />
         <Transitions transitions={transitions}
-          focusTransition={focusObject.bind(undefined, 'transition')} />
+          focusTransition={focusObject.bind(undefined, 'transition')}
+          dragTransitionMarker={dragTransitionMarker}
+          stopDragTransitionMarker={stopDragTransitionMarker} />
       </Scrollbars>
     );
   }

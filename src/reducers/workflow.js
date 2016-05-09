@@ -18,10 +18,15 @@ export const Activity = Record({
   name: undefined,
   laneId: undefined,
   focused: false,
+  hovered: false,
   x: 0,
   relativeY: 0,
   draggingDeltaY: 0,
   draggingDeltaX: 0,
+});
+
+export const Point = Record({
+  x: 0, y: 0,
 });
 
 const Lane = Record({
@@ -29,9 +34,13 @@ const Lane = Record({
   performers: List(),
 });
 
-const Segment = Record({
+export const Segment = Record({
   to: undefined,
   from: undefined,
+  toDraggingDeltaX: 0,
+  toDraggingDeltaY: 0,
+  fromDraggingDeltaX: 0,
+  fromDraggingDeltaY: 0,
 });
 
 export const Transition = Record({
@@ -49,7 +58,12 @@ function constructWorkflowsState(actionWorkflows) {
       trans.id,
       Transition({
         id: trans.id,
-        segments: List(trans.segments.map(Segment)),
+        segments: List(trans.segments.map(({ to, from }) =>
+          Segment({
+            to: typeof to === 'object' ? Point(to) : to,
+            from: typeof from === 'object' ? Point(from) : from,
+          })
+        )),
       }),
     ]));
     return Workflow({
@@ -86,6 +100,46 @@ function unfocusAll(workflows, workflowId) {
   );
 }
 
+function updateFinishedSegments(segment, toOrFrom, hoveredActivityId) {
+  return oldSegments =>
+    oldSegments.map(oldSeg => {
+      const { toDraggingDeltaX, toDraggingDeltaY,
+        fromDraggingDeltaX, fromDraggingDeltaY } = oldSeg;
+      let { to, from } = oldSeg;
+      if (typeof to !== 'string') {
+        to = Point({
+          x: Math.max(0, to.x + toDraggingDeltaX),
+          y: Math.max(0, to.y + toDraggingDeltaY),
+        });
+      }
+      if (typeof from !== 'string') {
+        from = Point({
+          x: Math.max(0, from.x + fromDraggingDeltaX),
+          y: Math.max(0, from.y + fromDraggingDeltaY),
+        });
+      }
+      return oldSeg.merge({
+        to, from,
+        toDraggingDeltaX: 0, toDraggingDeltaY: 0,
+        fromDraggingDeltaX: 0, fromDraggingDeltaY: 0,
+      });
+    })
+    .update(segment, oldSeg => {
+      return hoveredActivityId ?
+        oldSeg.set(toOrFrom, hoveredActivityId) :
+        oldSeg;
+    });
+}
+
+function moveSegment(toOrFrom, deltaX, deltaY) {
+  const xProp = `${toOrFrom}DraggingDeltaX`;
+  const yProp = `${toOrFrom}DraggingDeltaY`;
+  return oldSegment => oldSegment.merge({
+    [xProp]: oldSegment[xProp] + deltaX,
+    [yProp]: oldSegment[yProp] + deltaY,
+  });
+}
+
 export function workflowsReducer(workflows, action) {
   switch (action.type) {
 
@@ -96,6 +150,47 @@ export function workflowsReducer(workflows, action) {
         wf.merge({ current: true }) :
         wf.merge({ current: false });
     });
+  }
+
+  case WorkflowActions.STOP_MOVE_TRANSITION_MARKER: {
+    const { workflowId, transitionId, segment, toOrFrom,
+            hoveredActivityId } = action;
+    const updateSegments = updateFinishedSegments(
+      segment, toOrFrom, hoveredActivityId);
+    return updateThings(workflows, workflowId, oldWf =>
+      oldWf.merge({
+        activities: oldWf.activities.map(act => act.set('hovered', false)),
+        transitions: oldWf.transitions.update(transitionId, oldTrans =>
+          oldTrans.update('segments', updateSegments)),
+      })
+    );
+  }
+
+  case WorkflowActions.MOVE_TRANSITION_MARKER: {
+    const { workflowId, transitionId, segment, toOrFrom,
+            deltaX, deltaY, hoveredActivityId } = action;
+    return updateThings(workflows, workflowId, oldWf =>
+      oldWf.merge({
+        activities: oldWf.activities.map(act =>
+          act.set(
+            'hovered',
+            Boolean(hoveredActivityId && act.id === hoveredActivityId)
+          )
+        ),
+        transitions: oldWf.transitions.update(transitionId, oldTrans => {
+          const segUpdate = moveSegment(toOrFrom, deltaX, deltaY);
+          const segPlusOne = segment + 1;
+          return oldTrans.update('segments', oldSegments => {
+            let newSegments = oldSegments.update(segment, segUpdate);
+            if (toOrFrom === 'to' && newSegments.size > segPlusOne) {
+              const segNextUpdate = moveSegment('from', deltaX, deltaY);
+              newSegments = newSegments.update(segPlusOne, segNextUpdate);
+            }
+            return newSegments;
+          });
+        }),
+      })
+    );
   }
 
   case WorkflowActions.UNFOCUS_ALL:
@@ -149,8 +244,14 @@ export function workflowsReducer(workflows, action) {
   }
 }
 
-const INCLUDE_ACTIONS = [WorkflowActions.STOP_MOVE_ACTIVITY];
-const EXCLUDE_HISTORY = [WorkflowActions.MOVE_ACTIVITY];
+const INCLUDE_ACTIONS = [
+  WorkflowActions.STOP_MOVE_ACTIVITY,
+  WorkflowActions.STOP_MOVE_TRANSITION_MARKER,
+];
+const EXCLUDE_HISTORY = [
+  WorkflowActions.MOVE_ACTIVITY,
+  WorkflowActions.MOVE_TRANSITION_MARKER,
+];
 export default undoable(workflowsReducer, {
   actionFilter: action => INCLUDE_ACTIONS.indexOf(action.type) > -1,
   historyFilter: action => EXCLUDE_HISTORY.indexOf(action.type) === -1,

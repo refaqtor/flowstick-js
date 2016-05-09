@@ -32,6 +32,7 @@ export class Activities extends Component {
         {activities.map(act =>
           <Activity key={act.id} id={act.id}
             focused={act.focused}
+            ofInterest={act.ofInterest}
             displayName={act.name} x={act.x} y={act.y}
             onDrag={dragActivity}
             onDragStart={focusActivity.bind(undefined, act)}
@@ -51,6 +52,7 @@ export class Activity extends Component {
     onDragStart: PropTypes.func.isRequired,
     onDragStop: PropTypes.func.isRequired,
     focused: PropTypes.bool.isRequired,
+    ofInterest: PropTypes.bool.isRequired,
   }
 
   constructor(props) {
@@ -78,7 +80,7 @@ export class Activity extends Component {
   }
 
   render() {
-    const { x, y, focused } = this.props;
+    const { x, y, focused, ofInterest } = this.props;
     let { displayName } = this.props;
     if ( !displayName ) {
       displayName = <em>Missing name...</em>;
@@ -90,7 +92,10 @@ export class Activity extends Component {
         onStop={this.onDragStop.bind(this)}>
         <div
           onClick={this.handleClick}
-          className={classnames(styles.activity, { [styles.focused]: focused })}
+          className={classnames(styles.activity, {
+            [styles.focused]: focused,
+            [styles.ofInterest]: ofInterest,
+          })}
           style={{
             top: y, left: x,
             width: ACTIVITY_WIDTH, height: ACTIVITY_HEIGHT }}>

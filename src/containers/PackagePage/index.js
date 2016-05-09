@@ -6,8 +6,9 @@ import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
 
 import Package from '../../components/Package';
-import { dragActivity, stopDragActivity,
-         focusObject, unfocusAllObjects } from '../../actions/workflow';
+import { dragActivity, stopDragActivity, dragTransitionMarker,
+         stopDragTransitionMarker, focusObject,
+         unfocusAllObjects } from '../../actions/workflow';
 import { loadPackage, setCurrentWorkflow } from '../../actions/package';
 import { getLoading, getCurrentWorkflow, getWorkflows } from './selectors';
 
@@ -19,6 +20,8 @@ class PackagePage extends Component {
     loading: PropTypes.bool.isRequired,
     loadPackage: PropTypes.func.isRequired,
     dragActivity: PropTypes.func.isRequired,
+    dragTransitionMarker: PropTypes.func.isRequired,
+    stopDragTransitionMarker: PropTypes.func.isRequired,
     focusObject: PropTypes.func.isRequired,
     unfocusAllObjects: PropTypes.func.isRequired,
     stopDragActivity: PropTypes.func.isRequired,
@@ -51,8 +54,8 @@ class PackagePage extends Component {
 
   render() {
     const { loading, workflows, currentWorkflow, setCurrentWorkflow,
-            focusObject, stopDragActivity, dragActivity,
-            unfocusAllObjects } = this.props;
+            focusObject, stopDragActivity, dragActivity, dragTransitionMarker,
+            unfocusAllObjects, stopDragTransitionMarker } = this.props;
     const filename = getFilename(this.props);
     if (!filename) {
       return <h1>Nothing to see...</h1>;
@@ -69,6 +72,8 @@ class PackagePage extends Component {
           unfocusAllObjects={unfocusAllObjects}
           stopDragActivity={stopDragActivity}
           dragActivity={dragActivity}
+          dragTransitionMarker={dragTransitionMarker}
+          stopDragTransitionMarker={stopDragTransitionMarker}
           currentWorkflow={currentWorkflow} />
       </section>
     );
@@ -91,6 +96,8 @@ function mapDispatchToProps(dispatch) {
     stopDragActivity,
     focusObject,
     unfocusAllObjects,
+    dragTransitionMarker,
+    stopDragTransitionMarker,
   }, dispatch);
 }
 

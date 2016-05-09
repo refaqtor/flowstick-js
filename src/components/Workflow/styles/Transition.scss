@@ -1,6 +1,7 @@
 @import '../../../styles/vars.global';
 
 $wrap-size: 10px;
+$arrow-size: 16px;
 .transitionWrap {
   z-index: $fs-zindex-transition;
   position: absolute;
@@ -14,7 +15,6 @@ $wrap-size: 10px;
 }
 
 .transition {
-  $arrow-size: 16px;
   $transition-size: 3px;
   background-color: $fs-clr-bg-alternative;
   width: 100%;
@@ -52,6 +52,7 @@ $wrap-size: 10px;
   transition: visibility 0s linear 0.2s, opacity $fs-ani-medium;
   transition-delay: 0s;
   background-color: $fs-clr-accent-secondary;
+  color: $fs-clr-accent-secondary;
   visibility: hidden;
   opacity: 0;
   width: $drag-size;
@@ -73,5 +74,15 @@ $wrap-size: 10px;
   &:not(:first-child) {
     margin-left: -($drag-size / 2);
     left: 0;
+  }
+  .transitionWrap:last-child &:last-child {
+    background: none;
+    &::after {
+      font-family: 'Material Icons';
+      content: 'navigation';
+      position: absolute;
+      transform: rotate(-90deg);
+      font-size: $arrow-size + 6px;
+    }
   }
 }

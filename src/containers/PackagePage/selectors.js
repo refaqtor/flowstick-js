@@ -23,6 +23,7 @@ const ViewActivity = Record({
   name: undefined,
   laneId: undefined,
   focused: false,
+  ofInterest: false,
   x: 0,
   y: 0,
 });
@@ -32,6 +33,8 @@ const ViewSegment = Record({
   fromActivity: false,
   from: undefined,
   to: undefined,
+  toOffsetX: 0, toOffsetY: 0,
+  fromOffsetX: 0, fromOffsetY: 0,
 });
 
 const CurrentWorkflow = Record({
@@ -86,6 +89,7 @@ function getViewActivities(activities, lanes) {
       x: act.x + act.draggingDeltaX,
       y: act.relativeY + act.draggingDeltaY + laneOffsets.get(act.laneId, 0),
       focused: act.focused,
+      ofInterest: act.hovered,
     })
   );
 }
@@ -105,7 +109,13 @@ function getViewTransistions(process, activities) {
           fromActivity = true;
           from = addActivityOffsets(activityPositions.get(seg.from));
         }
-        return ViewSegment({ toActivity, fromActivity, to, from });
+        return ViewSegment({
+          toActivity, fromActivity, to, from,
+          toOffsetX: seg.toDraggingDeltaX,
+          toOffsetY: seg.toDraggingDeltaY,
+          fromOffsetX: seg.fromDraggingDeltaX,
+          fromOffsetY: seg.fromDraggingDeltaY,
+        });
       }),
     })
   );

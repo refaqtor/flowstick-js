@@ -20,6 +20,9 @@ export class Segment extends Component {
     from: POINT,
     to: POINT,
     onClick: PropTypes.func.isRequired,
+    onDragMarker: PropTypes.func.isRequired,
+    onStopDragMarker: PropTypes.func.isRequired,
+    hasStartHandle: PropTypes.bool.isRequired,
   }
 
   constructor(props) {
@@ -46,19 +49,36 @@ export class Segment extends Component {
     };
   }
 
+  handleMarkerStopDrag(toOrFrom) {
+    const prop = this.props[toOrFrom];
+    this.props.onStopDragMarker(toOrFrom, prop.x, prop.y);
+  }
+
+  handleMarkerDrag(toOrFrom, evt, ui) {
+    const { deltaX, deltaY } = ui.position;
+    const prop = this.props[toOrFrom];
+    this.props.onDragMarker(toOrFrom, deltaX, deltaY, prop.x, prop.y);
+  }
+
   render() {
-    const { from, to, onClick } = this.props;
+    const { from, to, onClick, hasStartHandle } = this.props;
     if (!to || !from) { return null; }
     const inlineStyles = this.styles(from, to);
+    const startHandle = hasStartHandle ?
+      <DraggableCore
+        onStop={this.handleMarkerStopDrag.bind(this, 'from')}
+        onDrag={this.handleMarkerDrag.bind(this, 'from')}>
+        <div className={styles.handle} />
+      </DraggableCore> : null;
     return (
       <div className={styles.transitionWrap} style={inlineStyles}
         onClick={onClick}>
         <div>
-          <DraggableCore>
-            <div className={styles.handle} />
-          </DraggableCore>
+          {startHandle}
           <div className={styles.transition} />
-          <DraggableCore>
+          <DraggableCore
+            onStop={this.handleMarkerStopDrag.bind(this, 'to')}
+            onDrag={this.handleMarkerDrag.bind(this, 'to')}>
             <div className={styles.handle} />
           </DraggableCore>
         </div>
@@ -71,6 +91,8 @@ export class Transition extends Component {
   static propTypes = {
     transition: ImmutablePropTypes.record.isRequired,
     onClick: PropTypes.func.isRequired,
+    onDragMarker: PropTypes.func.isRequired,
+    onStopDragMarker: PropTypes.func.isRequired,
   }
 
   constructor(props) {
@@ -78,9 +100,7 @@ export class Transition extends Component {
     this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
   }
 
-  closestActivityPoint(activityPoint, fromPoint) {
-    const fromY = fromPoint.y;
-    const fromX = fromPoint.x;
+  closestActivityPoint(activityPoint, fromX, fromY) {
     const topActivityY = activityPoint.y - HALF_ACTIVITY_HEIGHT;
     const bottomActivityY = activityPoint.y + HALF_ACTIVITY_HEIGHT;
     const leftActivityX = activityPoint.x - HALF_ACTIVITY_WIDTH;
@@ -128,12 +148,16 @@ export class Transition extends Component {
   computePoints(seg) {
     let { from, to } = seg;
     if (seg.toActivity) {
-      to = this.closestActivityPoint(to, from);
+      to = this.closestActivityPoint(
+        to, from.x + seg.fromOffsetX, from.y + seg.fromOffsetY);
     }
     if (to && seg.fromActivity) {
-      from = this.closestActivityPoint(from, to);
+      from = this.closestActivityPoint(
+        from, to.x + seg.toOffsetX, to.y + seg.toOffsetY);
     }
-    return { from, to };
+    from = from && { x: from.x + seg.fromOffsetX, y: from.y + seg.fromOffsetY };
+    to = to && { x: to.x + seg.toOffsetX, y: to.y + seg.toOffsetY };
+    return { to, from };
   }
 
   segmentClick(evt) {
@@ -143,8 +167,8 @@ export class Transition extends Component {
   }
 
   render() {
-    const { transition } = this.props;
-    const { segments, focused } = transition;
+    const { transition, onDragMarker, onStopDragMarker } = this.props;
+    const { segments, focused, id } = transition;
     const onSegClick = this.segmentClick.bind(this);
     return (
       <div className={classnames({ [styles.focused]: focused })}>
@@ -152,6 +176,9 @@ export class Transition extends Component {
           <Segment
             key={index}
             onClick={onSegClick}
+            onDragMarker={onDragMarker.bind(undefined, id, index)}
+            onStopDragMarker={onStopDragMarker.bind(undefined, id, index)}
+            hasStartHandle={index === 0}
             {...this.computePoints(seg)} />)}
       </div>
     );
@@ -162,6 +189,8 @@ export class Transitions extends Component {
   static propTypes = {
     transitions: ImmutablePropTypes.map.isRequired,
     focusTransition: PropTypes.func.isRequired,
+    dragTransitionMarker: PropTypes.func.isRequired,
+    stopDragTransitionMarker: PropTypes.func.isRequired,
   }
 
   constructor(props) {
@@ -170,13 +199,16 @@ export class Transitions extends Component {
   }
 
   render() {
-    const { transitions, focusTransition } = this.props;
+    const { transitions, focusTransition, dragTransitionMarker,
+            stopDragTransitionMarker } = this.props;
     return (
       <div>
         {transitions.map(transition =>
           <Transition
             key={transition.id}
             onClick={focusTransition}
+            onDragMarker={dragTransitionMarker}
+            onStopDragMarker={stopDragTransitionMarker}
             transition={transition} />).toList()}
       </div>
     );

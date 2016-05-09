@@ -2,7 +2,8 @@
 import { Map, List } from 'immutable';
 import expect from 'unexpected';
 
-import { workflowsReducer, Activity, Workflow, Transition } from '../workflow';
+import { workflowsReducer, Activity, Workflow, Transition,
+         Segment, Point } from '../workflow';
 import * as WorkflowActions from '../../actions/workflow';
 import * as PackageActions from '../../actions/package';
 
@@ -234,7 +235,9 @@ describe('Workflow Reducer', () => {
       activities: [{ id: 'act1', name: 'act1name',
                      x: 5, relativeY: 10, laneId: 'lane1' }],
       transitions: [{ id: 'trans1',
-                      segments: [{ from: '1', to: 10 }, { from: 10, to: '2' }] }],
+                      segments: [{ from: '1', to: { x: 10, y: 10 } },
+                                 { from: { x: 10, y: 10 }, to: '2' }],
+                   }],
     };
     const action = {
       type: PackageActions.FINISH_PACKAGE_LOAD_SUCCESS,
@@ -250,12 +253,18 @@ describe('Workflow Reducer', () => {
       id: '2', name: 'Two',
       lanes: [{ id: 'lane1', performers: ['perf1'] }],
       activities: [{ id: 'act1', name: 'act1name', draggingDeltaX: 0, focused: false,
-                     draggingDeltaY: 0, x: 5, relativeY: 10, laneId: 'lane1' }],
+                     draggingDeltaY: 0, x: 5, hovered: false, relativeY: 10,
+                     laneId: 'lane1' }],
       transitions: {
         trans1: {
           id: 'trans1',
           focused: false,
-          segments: [{ from: '1', to: 10 }, { from: 10, to: '2' }],
+          segments: [{ from: '1', to: { x: 10, y: 10 },
+                       toDraggingDeltaX: 0, toDraggingDeltaY: 0,
+                       fromDraggingDeltaX: 0, fromDraggingDeltaY: 0 },
+                     { from: { x: 10, y: 10 }, to: '2',
+                       toDraggingDeltaX: 0, toDraggingDeltaY: 0,
+                       fromDraggingDeltaX: 0, fromDraggingDeltaY: 0 }],
         },
       },
       current: false,
@@ -301,6 +310,138 @@ describe('Workflow Reducer', () => {
     const res2 = workflowsReducer(workflows2, action).toJS();
     expect(res2[0].current, 'to be truthy');
     expect(res2[1].current, 'to be falsy');
+  });
+
+  it('should move transitions.', () => {
+    const workflows1 = List([
+      Workflow({ id: '0', transitions: Map({
+        '1': Transition({
+          id: '1', segments: List([Segment(), Segment()]),
+        }),
+        '2': Transition({ id: '2' }),
+      }) }),
+      Workflow({ id: '1', current: true }),
+    ]);
+    const action = {
+      type: WorkflowActions.MOVE_TRANSITION_MARKER,
+      workflowId: '0', transitionId: '1', toOrFrom: 'to',
+      deltaY: 10, deltaX: 15, segment: 1,
+    };
+    const res1 = workflowsReducer(workflows1, action);
+    expect(res1.toJS()[0].transitions['1'].segments, 'to equal', [
+      { toDraggingDeltaX: 0, toDraggingDeltaY: 0,
+        fromDraggingDeltaX: 0, fromDraggingDeltaY: 0 },
+      { toDraggingDeltaX: 15, toDraggingDeltaY: 10,
+        fromDraggingDeltaX: 0, fromDraggingDeltaY: 0 },
+    ]);
+
+    const action2 = {
+      type: WorkflowActions.MOVE_TRANSITION_MARKER,
+      workflowId: '0', transitionId: '1', toOrFrom: 'to',
+      deltaY: -5, deltaX: -10, segment: 0,
+    };
+    const res2 = workflowsReducer(res1, action2);
+    expect(res2.toJS()[0].transitions['1'].segments, 'to equal', [
+      { toDraggingDeltaX: -10, toDraggingDeltaY: -5,
+        fromDraggingDeltaX: 0, fromDraggingDeltaY: 0 },
+      { toDraggingDeltaX: 15, toDraggingDeltaY: 10,
+        fromDraggingDeltaX: -10, fromDraggingDeltaY: -5 },
+    ]);
+  });
+
+  it('should update hovered state on transition move.', () => {
+    const workflows1 = List([
+      Workflow({
+        id: '0',
+        activities: List([Activity({ id: '1' }), Activity({ id: '2' })]),
+        transitions: Map({
+          '1': Transition({
+            id: '1', segments: List([Segment(), Segment()]),
+          }),
+        }),
+      }),
+      Workflow({ id: '1' }),
+    ]);
+    const action = {
+      type: WorkflowActions.MOVE_TRANSITION_MARKER,
+      workflowId: '0', transitionId: '1', toOrFrom: 'to',
+      deltaY: 10, deltaX: 15, segment: 1, hoveredActivityId: '1',
+    };
+    const res1 = workflowsReducer(workflows1, action);
+    expect(res1.toJS()[0].activities, 'to satisfy', [
+      { id: '1', hovered: true },
+      { id: '2', hovered: false },
+    ]);
+
+    const action2 = {
+      type: WorkflowActions.MOVE_TRANSITION_MARKER,
+      workflowId: '0', transitionId: '1', toOrFrom: 'to',
+      deltaY: 10, deltaX: 15, segment: 1, hoveredActivityId: '2',
+    };
+    const res2 = workflowsReducer(res1, action2);
+    expect(res2.toJS()[0].activities, 'to satisfy', [
+      { id: '1', hovered: false },
+      { id: '2', hovered: true },
+    ]);
+  });
+
+  it('should update activities and transitions when the transition dragging ' +
+     'is over.', () => {
+    const seg1 = Segment({
+      from: '1', to: Point({ x: 10, y: 10 }),
+      toDraggingDeltaX: 10, toDraggingDeltaY: 20,
+      fromDraggingDeltaX: 0, fromDraggingDeltaY: 0,
+    });
+    const seg2 = Segment({
+      from: Point({ x: 10, y: 10 }), to: '2',
+      toDraggingDeltaX: 0, toDraggingDeltaY: 0,
+      fromDraggingDeltaX: 10, fromDraggingDeltaY: 20,
+    });
+    const workflows1 = List([
+      Workflow({
+        id: '0',
+        activities: List([Activity({ id: '1', hovered: true }),
+                          Activity({ id: '2' })]),
+        transitions: Map({
+          '1': Transition({
+            id: '1', segments: List([seg1, seg2]),
+          }),
+        }),
+      }),
+      Workflow({ id: '1' }),
+    ]);
+    const action = {
+      type: WorkflowActions.STOP_MOVE_TRANSITION_MARKER,
+      workflowId: '0', transitionId: '1', toOrFrom: 'to', segment: 1,
+    };
+    const res1 = workflowsReducer(workflows1, action);
+    expect(res1.toJS()[0].activities, 'to satisfy', [
+      { id: '1', hovered: false },
+      { id: '2', hovered: false },
+    ]);
+    expect(res1.toJS()[0].transitions['1'].segments, 'to equal', [
+      { from: '1', to: { x: 20, y: 30 },
+        toDraggingDeltaX: 0, toDraggingDeltaY: 0,
+        fromDraggingDeltaX: 0, fromDraggingDeltaY: 0 },
+      { from: { x: 20, y: 30 }, to: '2',
+        toDraggingDeltaX: 0, toDraggingDeltaY: 0,
+        fromDraggingDeltaX: 0, fromDraggingDeltaY: 0 },
+    ]);
+
+    const action2 = {
+      type: WorkflowActions.STOP_MOVE_TRANSITION_MARKER,
+      workflowId: '0', transitionId: '1', toOrFrom: 'to', segment: 1,
+      hoveredActivityId: '1',
+    };
+    const res2 = workflowsReducer(res1, action2);
+    expect(res2.toJS()[0].transitions['1'].segments, 'to equal', [
+      { from: '1', to: { x: 20, y: 30 },
+        toDraggingDeltaX: 0, toDraggingDeltaY: 0,
+        fromDraggingDeltaX: 0, fromDraggingDeltaY: 0 },
+      { from: { x: 20, y: 30 }, to: '1',
+        toDraggingDeltaX: 0, toDraggingDeltaY: 0,
+        fromDraggingDeltaX: 0, fromDraggingDeltaY: 0 },
+    ]);
   });
 
 });
