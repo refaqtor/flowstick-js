@@ -6,6 +6,7 @@ $wrap-size: 10px;
   position: absolute;
   .focused & {
     z-index: $fs-zindex-focused;
+    pointer-events: none;
   }
   > div {
     position: relative;
@@ -22,7 +23,9 @@ $wrap-size: 10px;
   margin-top: $wrap-size / 2 - $transition-size / 2;
   position: relative;
   &::after {
-    transition: background $fs-ani-medium, opacity $fs-ani-medium;
+    transition: visibility 0.2s linear,
+                background $fs-ani-medium,
+                opacity $fs-ani-medium;
     font-family: 'Material Icons';
     position: absolute;
     top: 50%;
@@ -39,12 +42,15 @@ $wrap-size: 10px;
   }
   .focused &::after {
     opacity: 0;
+    visibility: hidden;
   }
 }
 
 .handle {
-  $drag-size: 12px;
+  $drag-size: 16px;
+  border-radius: 1px;
   transition: visibility 0s linear 0.2s, opacity $fs-ani-medium;
+  transition-delay: 0s;
   background-color: $fs-clr-accent-secondary;
   visibility: hidden;
   opacity: 0;
@@ -53,19 +59,19 @@ $wrap-size: 10px;
   cursor: move;
   position: absolute;
   top: 50%;
+  pointer-events: auto;
   margin-top: -($drag-size / 2);
-  left: 0;
   .focused & {
     visibility: visible;
     opacity: 1;
     transition-delay: 0s;
   }
-  &:last-child {
-    display: none;
+  &:first-child {
+    margin-right: -($drag-size / 2);
     right: 0;
-    left: auto;
   }
-  .focused > div:first-child &:last-child {
-    display: block;
+  &:not(:first-child) {
+    margin-left: -($drag-size / 2);
+    left: 0;
   }
 }
