@@ -84,11 +84,11 @@ export function unfocusAllObjects(workflowId) {
   };
 }
 
-export function focusObject(workflowId, objectType, object) {
+export function focusObject(workflowId, objectType, objectId) {
   return {
     type: FOCUS_OBJECT,
     objectType,
-    object,
+    objectId,
     workflowId,
   };
 }

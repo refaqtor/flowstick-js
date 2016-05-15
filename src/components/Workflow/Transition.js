@@ -7,18 +7,16 @@ import { DraggableCore } from 'react-draggable';
 import styles from './styles/Transition';
 import { HALF_ACTIVITY_HEIGHT, HALF_ACTIVITY_WIDTH } from './Activity';
 
-const POINT = PropTypes.shape({
-  x: PropTypes.number.isRequired,
-  y: PropTypes.number.isRequired,
-});
-
 const SEGMENT_THICKNESS = 10;
 const ACTIVITY_DIAGONAL_SLOPE = HALF_ACTIVITY_HEIGHT / HALF_ACTIVITY_WIDTH;
 
 export class Segment extends Component {
   static propTypes = {
-    from: POINT,
-    to: POINT,
+    fromX: PropTypes.number,
+    fromY: PropTypes.number,
+    toX: PropTypes.number,
+    toY: PropTypes.number,
+    id: PropTypes.number.isRequired,
     onClick: PropTypes.func.isRequired,
     onDragMarker: PropTypes.func.isRequired,
     onStopDragMarker: PropTypes.func.isRequired,
@@ -28,14 +26,13 @@ export class Segment extends Component {
   constructor(props) {
     super(props);
     this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
+    this.handleMarkerDragFrom = this.handleMarkerDrag.bind(this, 'from');
+    this.handleMarkerDragTo = this.handleMarkerDrag.bind(this, 'to');
+    this.handleMarkerStopDragFrom = this.handleMarkerStopDrag.bind(this, 'from');
+    this.handleMarkerStopDragTo = this.handleMarkerStopDrag.bind(this, 'to');
   }
 
-  styles(from, to) {
-    const x1 = from.x;
-    const y1 = from.y;
-    const x2 = to.x;
-    const y2 = to.y;
-
+  styles(x1, y1, x2, y2) {
     const len = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
     const cx = (x1 + x2) / 2 - len / 2;
     const cy = (y1 + y2) / 2 - SEGMENT_THICKNESS / 2;
@@ -50,24 +47,31 @@ export class Segment extends Component {
   }
 
   handleMarkerStopDrag(toOrFrom) {
-    const prop = this.props[toOrFrom];
-    this.props.onStopDragMarker(toOrFrom, prop.x, prop.y);
+    const propY = this.props[`${toOrFrom}Y`];
+    const propX = this.props[`${toOrFrom}X`];
+    const { id } = this.props;
+    this.props.onStopDragMarker(id, toOrFrom, propX, propY);
   }
 
   handleMarkerDrag(toOrFrom, evt, ui) {
     const { deltaX, deltaY } = ui.position;
-    const prop = this.props[toOrFrom];
-    this.props.onDragMarker(toOrFrom, deltaX, deltaY, prop.x, prop.y);
+    const propY = this.props[`${toOrFrom}Y`];
+    const propX = this.props[`${toOrFrom}X`];
+    const { id } = this.props;
+    this.props.onDragMarker(id, toOrFrom, deltaX, deltaY, propX, propY);
   }
 
   render() {
-    const { from, to, onClick, hasStartHandle } = this.props;
-    if (!to || !from) { return null; }
-    const inlineStyles = this.styles(from, to);
+    const { fromX, fromY, toX, toY, onClick, hasStartHandle } = this.props;
+    // Only expect the from or to to be missing, never one of each
+    if (typeof fromX !== 'number' || typeof toX !== 'number') {
+      return null;
+    }
+    const inlineStyles = this.styles(fromX, fromY, toX, toY);
     const startHandle = hasStartHandle ?
       <DraggableCore
-        onStop={this.handleMarkerStopDrag.bind(this, 'from')}
-        onDrag={this.handleMarkerDrag.bind(this, 'from')}>
+        onStop={this.handleMarkerStopDragFrom}
+        onDrag={this.handleMarkerDragFrom}>
         <div className={styles.handle} />
       </DraggableCore> : null;
     return (
@@ -77,8 +81,8 @@ export class Segment extends Component {
           {startHandle}
           <div className={styles.transition} />
           <DraggableCore
-            onStop={this.handleMarkerStopDrag.bind(this, 'to')}
-            onDrag={this.handleMarkerDrag.bind(this, 'to')}>
+            onStop={this.handleMarkerStopDragTo}
+            onDrag={this.handleMarkerDragTo}>
             <div className={styles.handle} />
           </DraggableCore>
         </div>
@@ -155,29 +159,40 @@ export class Transition extends Component {
       from = this.closestActivityPoint(
         from, to.x + seg.toOffsetX, to.y + seg.toOffsetY);
     }
-    from = from && { x: from.x + seg.fromOffsetX, y: from.y + seg.fromOffsetY };
-    to = to && { x: to.x + seg.toOffsetX, y: to.y + seg.toOffsetY };
-    return { to, from };
+    return {
+      toX: to && to.x + seg.toOffsetX,
+      toY: to && to.y + seg.toOffsetY,
+      fromX: from && from.x + seg.fromOffsetX,
+      fromY: from && from.y + seg.fromOffsetY,
+    };
   }
 
-  segmentClick(evt) {
+  handleStopDragMarker = (...args) => {
+    const { id } = this.props.transition;
+    this.props.onStopDragMarker.apply(undefined, [id, ...args]);
+  }
+
+  handleDragMarker = (...args) => {
+    const { id } = this.props.transition;
+    this.props.onDragMarker.apply(undefined, [id, ...args]);
+  }
+
+  handleSegmentClick = evt => {
     const { onClick, transition } = this.props;
-    onClick(transition);
+    onClick(transition.id);
     evt.stopPropagation();
   }
 
   render() {
-    const { transition, onDragMarker, onStopDragMarker } = this.props;
-    const { segments, focused, id } = transition;
-    const onSegClick = this.segmentClick.bind(this);
+    const { segments, focused } = this.props.transition;
     return (
       <div className={classnames({ [styles.focused]: focused })}>
         {segments.map((seg, index) =>
-          <Segment
-            key={index}
-            onClick={onSegClick}
-            onDragMarker={onDragMarker.bind(undefined, id, index)}
-            onStopDragMarker={onStopDragMarker.bind(undefined, id, index)}
+          <Segment key={index}
+            id={index}
+            onClick={this.handleSegmentClick}
+            onDragMarker={this.handleDragMarker}
+            onStopDragMarker={this.handleStopDragMarker}
             hasStartHandle={index === 0}
             {...this.computePoints(seg)} />)}
       </div>

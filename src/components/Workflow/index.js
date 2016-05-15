@@ -25,11 +25,17 @@ export default class Workflow extends Component {
   constructor(props) {
     super(props);
     this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
+    this.focusTransition = this.focusObject.bind(this, 'transition');
+    this.focusActivity = this.focusObject.bind(this, 'activity');
+  }
+
+  focusObject(type, objectId) {
+    this.props.focusObject(type, objectId);
   }
 
   render() {
     const { lanes, lanesWidth, activities, transitions, stopDragTransitionMarker,
-            dragActivity, stopDragActivity, focusObject, className,
+            dragActivity, stopDragActivity, className,
             unfocusAllObjects, dragTransitionMarker } = this.props;
     return (
       <Scrollbars className={className} style={{ height: 'auto' }}
@@ -37,11 +43,11 @@ export default class Workflow extends Component {
         onClick={unfocusAllObjects}>
         <Lanes lanes={lanes} width={lanesWidth} />
         <Activities activities={activities}
-          focusActivity={focusObject.bind(undefined, 'activity')}
+          focusActivity={this.focusActivity}
           dragActivity={dragActivity}
           stopDragActivity={stopDragActivity} />
         <Transitions transitions={transitions}
-          focusTransition={focusObject.bind(undefined, 'transition')}
+          focusTransition={this.focusTransition}
           dragTransitionMarker={dragTransitionMarker}
           stopDragTransitionMarker={stopDragTransitionMarker} />
       </Scrollbars>

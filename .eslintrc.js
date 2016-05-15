@@ -18,6 +18,7 @@ module.exports = {
     "commonjs": true,
   },
   "rules": {
+    "react/jsx-no-bind": 2,
     "no-var": 2,
     "strict": [2, "never"],
     "comma-dangle": [1, "always-multiline"],

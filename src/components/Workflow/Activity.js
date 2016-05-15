@@ -24,9 +24,12 @@ export class Activities extends Component {
     this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
   }
 
+  focusActivity = actId => {
+    this.props.focusActivity(actId);
+  }
+
   render() {
-    const { activities, dragActivity, stopDragActivity,
-            focusActivity } = this.props;
+    const { activities, dragActivity, stopDragActivity } = this.props;
     return (
       <div>
         {activities.map(act =>
@@ -35,7 +38,7 @@ export class Activities extends Component {
             ofInterest={act.ofInterest}
             displayName={act.name} x={act.x} y={act.y}
             onDrag={dragActivity}
-            onDragStart={focusActivity.bind(undefined, act)}
+            onDragStart={this.focusActivity}
             onDragStop={stopDragActivity} />)}
       </div>
     );
@@ -57,19 +60,31 @@ export class Activity extends Component {
 
   constructor(props) {
     super(props);
+    this.shouldComponentUpdate = newProps => {
+      return this.props.x !== newProps.x ||
+        this.props.y !== newProps.y ||
+        this.props.displayName !== newProps.displayName ||
+        this.props.focused !== newProps.focused ||
+        this.props.ofInterest !== newProps.ofInterest ||
+        this.props.ofInterest !== newProps.ofInterest ||
+        this.props.onDragStop !== newProps.onDragStop ||
+        this.props.onDrag !== newProps.onDrag ||
+        false;
+    };
     this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
   }
 
-  onDragStop() {
+  onDragStop = () => {
     const { id, onDragStop, y } = this.props;
     onDragStop(id, y);
   }
 
-  onDragStart() {
-    this.props.onDragStart();
+  onDragStart = () => {
+    const { id, onDragStart } = this.props;
+    onDragStart(id);
   }
 
-  onDrag(evt, ui) {
+  onDrag = (evt, ui) => {
     const { id, onDrag } = this.props;
     const { deltaX, deltaY } = ui.position;
     onDrag(id, deltaX, deltaY);
@@ -87,9 +102,9 @@ export class Activity extends Component {
     }
     return (
       <DraggableCore
-        onStart={this.onDragStart.bind(this)}
-        onDrag={this.onDrag.bind(this)}
-        onStop={this.onDragStop.bind(this)}>
+        onStart={this.onDragStart}
+        onDrag={this.onDrag}
+        onStop={this.onDragStop}>
         <div
           onClick={this.handleClick}
           className={classnames(styles.activity, {

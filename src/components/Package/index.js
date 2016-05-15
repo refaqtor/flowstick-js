@@ -26,32 +26,55 @@ class CurrentWorkflow extends Component {
     this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
   }
 
-  stopDragActivity(activityId, activityY) {
+  stopDragActivity = (activityId, activityY) => {
     const { stopDragActivity, currentWorkflow } = this.props;
     const { lanes, id } = currentWorkflow;
     stopDragActivity(id, activityId, activityY, lanes);
   }
 
+  unfocusAllObjects = () => {
+    const { unfocusAllObjects, currentWorkflow } = this.props;
+    unfocusAllObjects(currentWorkflow.id);
+  }
+
+  focusObject = (objectType, objectId) => {
+    const { focusObject, currentWorkflow } = this.props;
+    focusObject(currentWorkflow.id, objectType, objectId);
+  }
+
+  dragActivity = (...args) => {
+    const { dragActivity, currentWorkflow } = this.props;
+    dragActivity.apply(undefined, [currentWorkflow.id, ...args]);
+  }
+
+  dragTransitionMarker = (...args) => {
+    const { dragTransitionMarker, currentWorkflow } = this.props;
+    dragTransitionMarker.apply(undefined, [currentWorkflow, ...args]);
+  }
+
+  stopDragTransitionMarker = (...args) => {
+    const { stopDragTransitionMarker, currentWorkflow } = this.props;
+    stopDragTransitionMarker.apply(undefined, [currentWorkflow, ...args]);
+  }
+
   render() {
-    const { currentWorkflow, dragActivity, focusObject, stopDragTransitionMarker,
-            unfocusAllObjects, dragTransitionMarker } = this.props;
+    const { currentWorkflow } = this.props;
     if (!currentWorkflow) {
       return null;
     }
-    const { lanes, lanesWidth, activities, transitions, id } = currentWorkflow;
+    const { lanes, lanesWidth, activities, transitions } = currentWorkflow;
     return (
       <Workflow className={CurrentWorkflow.classNames}
         lanes={lanes}
         lanesWidth={lanesWidth}
         activities={activities}
         transitions={transitions}
-        unfocusAllObjects={unfocusAllObjects.bind(undefined, id)}
-        dragActivity={dragActivity.bind(undefined, id)}
-        dragTransitionMarker={dragTransitionMarker.bind(undefined, currentWorkflow)}
-        stopDragTransitionMarker={
-          stopDragTransitionMarker.bind(undefined, currentWorkflow)}
-        focusObject={focusObject.bind(undefined, id)}
-        stopDragActivity={this.stopDragActivity.bind(this)} />
+        unfocusAllObjects={this.unfocusAllObjects}
+        dragActivity={this.dragActivity}
+        dragTransitionMarker={this.dragTransitionMarker}
+        stopDragTransitionMarker={this.stopDragTransitionMarker}
+        focusObject={this.focusObject}
+        stopDragActivity={this.stopDragActivity} />
     );
   }
 }

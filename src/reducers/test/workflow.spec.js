@@ -125,7 +125,7 @@ describe('Workflow Reducer', () => {
     const original = List([wf1, wf2]);
     const action = {
       type: WorkflowActions.FOCUS_OBJECT,
-      object: wf2.transitions.get('1'),
+      objectId: '1',
       objectType: 'transition',
       workflowId: '2',
     };
@@ -153,7 +153,7 @@ describe('Workflow Reducer', () => {
     const original = List([wf1, wf2]);
     const action = {
       type: WorkflowActions.FOCUS_OBJECT,
-      object: wf2.activities.get(1),
+      objectId: '1',
       objectType: 'activity',
       workflowId: '2',
     };

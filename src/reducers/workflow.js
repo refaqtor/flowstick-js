@@ -197,14 +197,14 @@ export function workflowsReducer(workflows, action) {
     return unfocusAll(workflows, action.workflowId);
 
   case WorkflowActions.FOCUS_OBJECT: {
-    const { workflowId, object, objectType } = action;
+    const { workflowId, objectId, objectType } = action;
     const typething = STATE_FOCUS_LOOKUP[objectType];
     if (!typething) { return workflows; }
     const unfocused = unfocusAll(workflows, workflowId);
     return updateThings(unfocused, workflowId, oldWf =>
       oldWf.merge({
         [typething]: oldWf[typething].map(oldthing => {
-          return oldthing.id === object.id ?
+          return oldthing.id === objectId ?
             oldthing.set('focused', true) :
             oldthing;
         }),
