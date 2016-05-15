@@ -248,7 +248,7 @@ describe('Workflow Reducer', () => {
     };
     const expectedWorkflow1 = {
       lanes: [], activities: [], transitions: {},
-      id: '1', name: 'One', current: false };
+      id: '1', name: 'One', current: false, scrollX: 0 };
     const expectedWorkflow2 = {
       id: '2', name: 'Two',
       lanes: [{ id: 'lane1', performers: ['perf1'] }],
@@ -267,12 +267,23 @@ describe('Workflow Reducer', () => {
                        fromDraggingDeltaX: 0, fromDraggingDeltaY: 0 }],
         },
       },
-      current: false,
+      current: false, scrollX: 0,
     };
     expect(workflowsReducer(List(), action).toJS(), 'to equal', [
       expectedWorkflow1,
       expectedWorkflow2,
     ]);
+  });
+
+  it('should keep track of the scroll position.', () => {
+    const workflows1 = List([Workflow({ id: '1' })]);
+    const action = {
+      type: WorkflowActions.SCROLL_WORKFLOW,
+      workflowId: '1',
+      scrollX: 200,
+    };
+    const res1 = workflowsReducer(workflows1, action).toJS();
+    expect(res1[0].scrollX, 'to be', 200);
   });
 
   it('should not allow a x position of less than 0.', () => {

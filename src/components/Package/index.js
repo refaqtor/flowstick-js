@@ -17,6 +17,7 @@ class CurrentWorkflow extends Component {
     stopDragTransitionMarker: PropTypes.func.isRequired,
     dragActivity: PropTypes.func.isRequired,
     stopDragActivity: PropTypes.func.isRequired,
+    onWorkflowScroll: PropTypes.func.isRequired,
   }
 
   static classNames = classnames('column', 'is-quadruple', wfStyles.main)
@@ -57,6 +58,11 @@ class CurrentWorkflow extends Component {
     stopDragTransitionMarker.apply(undefined, [currentWorkflow, ...args]);
   }
 
+  handleWorkflowScroll = left => {
+    const { onWorkflowScroll, currentWorkflow } = this.props;
+    onWorkflowScroll(currentWorkflow.id, left);
+  }
+
   render() {
     const { currentWorkflow } = this.props;
     if (!currentWorkflow) {
@@ -73,6 +79,7 @@ class CurrentWorkflow extends Component {
         dragActivity={this.dragActivity}
         dragTransitionMarker={this.dragTransitionMarker}
         stopDragTransitionMarker={this.stopDragTransitionMarker}
+        onScroll={this.handleWorkflowScroll}
         focusObject={this.focusObject}
         stopDragActivity={this.stopDragActivity} />
     );
@@ -90,11 +97,10 @@ export default class Package extends Component {
     dragActivity: PropTypes.func.isRequired,
     stopDragActivity: PropTypes.func.isRequired,
     setCurrentWorkflow: PropTypes.func.isRequired,
+    onWorkflowScroll: PropTypes.func.isRequired,
     workflows: ImmutablePropTypes.list.isRequired,
     currentWorkflow: ImmutablePropTypes.record,
   }
-
-  static naviagtorStyles = { maxWidth: '25%' }
 
   constructor(props) {
     super(props);
@@ -103,7 +109,7 @@ export default class Package extends Component {
 
   render() {
     const { workflows, stopDragActivity, dragActivity, focusObject, loading,
-            currentWorkflow, setCurrentWorkflow, unfocusAllObjects,
+            currentWorkflow, setCurrentWorkflow, unfocusAllObjects, onWorkflowScroll,
             dragTransitionMarker, stopDragTransitionMarker } = this.props;
     if (loading) {
       return (
@@ -114,11 +120,13 @@ export default class Package extends Component {
         </div>
       );
     }
+    const navigatorShadow = {
+      [wfStyles.navigatorShadows]: currentWorkflow && currentWorkflow.scrollX > 0,
+    };
     return (
       <div className="columns column stretch-columns">
         <PackageNavigator
-          className="column"
-          style={Package.naviagtorStyles}
+          className={classnames('column', wfStyles.navigator, navigatorShadow)}
           onNavClick={setCurrentWorkflow}
           workflows={workflows}
           currentWorkflow={currentWorkflow} />
@@ -129,6 +137,7 @@ export default class Package extends Component {
           dragTransitionMarker={dragTransitionMarker}
           stopDragTransitionMarker={stopDragTransitionMarker}
           focusObject={focusObject}
+          onWorkflowScroll={onWorkflowScroll}
           currentWorkflow={currentWorkflow} />
       </div>
     );

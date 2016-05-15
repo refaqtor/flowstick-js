@@ -20,6 +20,7 @@ export default class Workflow extends Component {
     focusObject: PropTypes.func.isRequired,
     unfocusAllObjects: PropTypes.func.isRequired,
     className: PropTypes.string,
+    onScroll: PropTypes.func.isRequired,
   }
 
   static styles = { height: 'auto', WebkitUserSelect: 'none', userSelect: 'none' }
@@ -35,6 +36,10 @@ export default class Workflow extends Component {
     this.props.focusObject(type, objectId);
   }
 
+  handleScrollUpdate = ({ scrollLeft }) => {
+    this.props.onScroll(scrollLeft);
+  }
+
   render() {
     const { lanes, lanesWidth, activities, transitions, stopDragTransitionMarker,
             dragActivity, stopDragActivity, className,
@@ -42,6 +47,7 @@ export default class Workflow extends Component {
     return (
       <Scrollbars className={className} style={Workflow.styles}
         invertWheelDirection
+        onUpdate={this.handleScrollUpdate}
         onClick={unfocusAllObjects}>
         <Lanes lanes={lanes} width={lanesWidth} />
         <Activities activities={activities}

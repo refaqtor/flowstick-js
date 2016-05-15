@@ -7,6 +7,7 @@ import * as PackageActions from '../actions/package';
 export const Workflow = Record({
   id: undefined,
   name: undefined,
+  scrollX: 0,
   activities: List(),
   lanes: List(),
   transitions: Map(),
@@ -232,6 +233,13 @@ export function workflowsReducer(workflows, action) {
         draggingDeltaY: 0,
         x: Math.max(0, oldAct.x + oldAct.draggingDeltaX),
       })
+    );
+  }
+
+  case WorkflowActions.SCROLL_WORKFLOW: {
+    const { workflowId, scrollX } = action;
+    return updateThings(workflows, workflowId, oldWf =>
+      oldWf.set('scrollX', Math.max(0, scrollX))
     );
   }
 

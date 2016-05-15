@@ -39,6 +39,7 @@ const ViewSegment = Record({
 
 const CurrentWorkflow = Record({
   id: undefined,
+  scrollX: 0,
   lanesWidth: MIN_LANE_WIDTH,
   lanes: List(),
   activities: List(),
@@ -145,6 +146,7 @@ export const getCurrentWorkflow = createSelector(
     );
     return CurrentWorkflow({
       id: currentWf.id,
+      scrollX: currentWf.scrollX,
       lanes,
       lanesWidth,
       activities,

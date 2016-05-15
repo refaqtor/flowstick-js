@@ -6,3 +6,11 @@
     z-index: $fs-zindex-wf-scrollbars;
   }
 }
+
+.navigator {
+  max-width: 25%;
+  transition: box-shadow $fs-ani-slow;
+}
+.navigatorShadows {
+  box-shadow: $fs-sha-two;
+}

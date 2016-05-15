@@ -8,7 +8,7 @@ import Helmet from 'react-helmet';
 import Package from '../../components/Package';
 import { dragActivity, stopDragActivity, dragTransitionMarker,
          stopDragTransitionMarker, focusObject,
-         unfocusAllObjects } from '../../actions/workflow';
+         unfocusAllObjects, scrollWorkflow } from '../../actions/workflow';
 import { loadPackage, setCurrentWorkflow } from '../../actions/package';
 import { getLoading, getCurrentWorkflow, getWorkflows } from './selectors';
 
@@ -26,6 +26,7 @@ class PackagePage extends Component {
     unfocusAllObjects: PropTypes.func.isRequired,
     stopDragActivity: PropTypes.func.isRequired,
     setCurrentWorkflow: PropTypes.func.isRequired,
+    scrollWorkflow: PropTypes.func.isRequired,
     workflows: ImmutablePropTypes.list.isRequired,
     currentWorkflow: ImmutablePropTypes.record,
   }
@@ -55,7 +56,8 @@ class PackagePage extends Component {
   render() {
     const { loading, workflows, currentWorkflow, setCurrentWorkflow,
             focusObject, stopDragActivity, dragActivity, dragTransitionMarker,
-            unfocusAllObjects, stopDragTransitionMarker } = this.props;
+            unfocusAllObjects, stopDragTransitionMarker,
+            scrollWorkflow } = this.props;
     const filename = getFilename(this.props);
     if (!filename) {
       return <h1>Nothing to see...</h1>;
@@ -72,6 +74,7 @@ class PackagePage extends Component {
           unfocusAllObjects={unfocusAllObjects}
           stopDragActivity={stopDragActivity}
           dragActivity={dragActivity}
+          onWorkflowScroll={scrollWorkflow}
           dragTransitionMarker={dragTransitionMarker}
           stopDragTransitionMarker={stopDragTransitionMarker}
           currentWorkflow={currentWorkflow} />
@@ -98,6 +101,7 @@ function mapDispatchToProps(dispatch) {
     unfocusAllObjects,
     dragTransitionMarker,
     stopDragTransitionMarker,
+    scrollWorkflow,
   }, dispatch);
 }
 

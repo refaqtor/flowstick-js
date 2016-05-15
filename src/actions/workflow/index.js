@@ -8,6 +8,7 @@ export const MOVE_ACTIVITY = 'wf_MOVE_ACTIVITY';
 export const STOP_MOVE_ACTIVITY = 'wf_STOP_MOVE_ACTIVITY';
 export const FOCUS_OBJECT = 'wf_FOCUS_OBJECT';
 export const UNFOCUS_ALL = 'wf_UNFOCUS_ALL_OBJECTS';
+export const SCROLL_WORKFLOW = 'wf_SCROLL_WORKFLOW';
 
 export function redo() {
   return { type: REDO };
@@ -50,6 +51,13 @@ export function dragTransitionMarker(workflow, transitionId, segment,
   return {
     type: MOVE_TRANSITION_MARKER,
     hoveredActivityId, workflowId, transitionId, segment, toOrFrom, deltaX, deltaY,
+  };
+}
+
+export function scrollWorkflow(workflowId, scrollX) {
+  return {
+    type: SCROLL_WORKFLOW,
+    workflowId, scrollX,
   };
 }
 
