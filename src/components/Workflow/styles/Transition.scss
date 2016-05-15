@@ -33,7 +33,7 @@ $arrow-size: 16px;
     left: -2px;
     transform: rotate(-90deg);
     content: 'navigation';
-    color: $fs-clr-accent-highlight;
+    color: $fs-clr-bg-light;
     font-size: $arrow-size;
     font-weight: bold;
   }
@@ -47,11 +47,10 @@ $arrow-size: 16px;
 }
 
 .handle {
-  $drag-size: 16px;
+  $drag-size: 18px;
   border-radius: 1px;
   transition: visibility 0s linear 0.2s, opacity $fs-ani-medium;
   transition-delay: 0s;
-  background-color: $fs-clr-accent-secondary;
   color: $fs-clr-accent-secondary;
   visibility: hidden;
   opacity: 0;
@@ -62,6 +61,11 @@ $arrow-size: 16px;
   top: 50%;
   pointer-events: auto;
   margin-top: -($drag-size / 2);
+  &::after {
+    font-family: 'Material Icons';
+    content: 'radio_button_checked';
+    font-size: $drag-size;
+  }
   .focused & {
     visibility: visible;
     opacity: 1;

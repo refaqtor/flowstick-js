@@ -22,6 +22,8 @@ export default class Workflow extends Component {
     className: PropTypes.string,
   }
 
+  static styles = { height: 'auto', WebkitUserSelect: 'none', userSelect: 'none' }
+
   constructor(props) {
     super(props);
     this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
@@ -38,7 +40,7 @@ export default class Workflow extends Component {
             dragActivity, stopDragActivity, className,
             unfocusAllObjects, dragTransitionMarker } = this.props;
     return (
-      <Scrollbars className={className} style={{ height: 'auto' }}
+      <Scrollbars className={className} style={Workflow.styles}
         invertWheelDirection
         onClick={unfocusAllObjects}>
         <Lanes lanes={lanes} width={lanesWidth} />
