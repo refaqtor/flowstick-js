@@ -26,4 +26,9 @@ module.exports = {
   },
   plugins: [],
   externals: [],
+  sassLoader: {
+    data: '@import "' +
+      path.resolve(__dirname, 'src/styles/toolbox-theme.global.scss') +
+      '";',
+  },
 };

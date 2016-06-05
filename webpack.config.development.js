@@ -31,12 +31,9 @@ config.module.loaders.push({
     'style-loader',
     'css-loader?modules&sourceMap' +
       '&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]' +
-      '!sass-loader?sourceMap' +
-      '!toolbox',
+      '!sass-loader?sourceMap',
   ],
 });
-
-config.toolbox = { theme: './src/styles/toolbox-theme.global.scss' };
 
 config.plugins.push(
   new webpack.HotModuleReplacementPlugin(),
