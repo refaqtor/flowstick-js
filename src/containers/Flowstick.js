@@ -9,7 +9,8 @@ import { openFileDialog, closeFileDialog } from '../actions/filedialog';
 
 let DevTools = null;
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== 'production' &&
+    process.env.WITH_DEVTOOLS) {
   DevTools = require('./DevTools');
   DevTools = <DevTools />;
 }
