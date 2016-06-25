@@ -16,7 +16,7 @@ config.entry = './src/index';
 config.output.publicPath = '../dist/';
 
 config.module.loaders.push({
-  test: /\.global\.scss$/,
+  test: /(\.global\.scss|\.css)$/,
   loader: ExtractTextPlugin.extract(
     'style-loader',
     'css-loader!sass-loader'
