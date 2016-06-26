@@ -1,11 +1,15 @@
 import React, { Component, PropTypes } from 'react';
+import ImmutablePropTypes from 'react-immutable-proptypes';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import AppHeader from '../components/AppHeader';
 import FileDialog from '../components/FileDialog';
+import Shade from '../components/Shade';
+import ItemEditor from '../components/ItemEditor';
 import { undo, redo } from '../actions/workflow';
 import { openFileDialog, closeFileDialog } from '../actions/filedialog';
+import { editItemChange } from '../actions/itemeditor';
 
 let DevTools = null;
 
@@ -23,6 +27,8 @@ export default class Flowstick extends Component {
     openFileDialog: PropTypes.func.isRequired,
     undo: PropTypes.func.isRequired,
     redo: PropTypes.func.isRequired,
+    editItem: ImmutablePropTypes.record,
+    editItemChange: PropTypes.func.isRequired,
     undoAvailable: PropTypes.bool.isRequired,
     redoAvailable: PropTypes.bool.isRequired,
   }
@@ -32,8 +38,14 @@ export default class Flowstick extends Component {
   }
 
   render() {
-    const { openFileDialog, closeFileDialog, fileDialogIsOpen,
-            undo, redo, undoAvailable, redoAvailable } = this.props;
+    const { children, openFileDialog, closeFileDialog, fileDialogIsOpen,
+            undo, redo, undoAvailable, redoAvailable, editItem,
+            editItemChange } = this.props;
+    const shadeContents = editItem ?
+                          <ItemEditor
+                            item={editItem}
+                            onItemChange={editItemChange} /> :
+                          null;
     return (
       <FileDialog open={fileDialogIsOpen} closeFileDialog={closeFileDialog}>
         <div className="columns vert-columns" style={Flowstick.styles}>
@@ -43,8 +55,9 @@ export default class Flowstick extends Component {
             fileDialogIsOpen={fileDialogIsOpen}
             openFileDialog={openFileDialog} />
           <section className="column columns vert-columns">
-            {this.props.children}
+            {children}
           </section>
+          <Shade visible={true}>{shadeContents}</Shade>
           {DevTools}
         </div>
       </FileDialog>
@@ -57,6 +70,7 @@ function mapStateToProps(state) {
     fileDialogIsOpen: Boolean(state.fileDialog.open),
     undoAvailable: Boolean(state.package.workflows.past.size),
     redoAvailable: Boolean(state.package.workflows.future.size),
+    editItem: false,
   };
 };
 
@@ -66,6 +80,7 @@ function mapDispatchToProps(dispatch) {
     openFileDialog,
     undo,
     redo,
+    editItemChange,
   }, dispatch);
 }
 

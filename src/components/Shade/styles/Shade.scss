@@ -1,0 +1,19 @@
+@import '../../../styles/vars.global';
+
+.shade {
+  $shade-width: 700px;
+  position: absolute;
+  top: 0;
+  right: -$shade-width;
+  width: $shade-width;
+  height: 100%;
+  background: $fs-clr-bg-alternative;
+  z-index: $fs-zindex-editor;
+  transition: right $fs-ani-slow, box-shadow $fs-ani-slow;
+  padding: $fs-spacing-unit * 3;
+}
+
+.shadeVisible {
+  right: 0;
+  box-shadow: $fs-sha-four;
+}
